@@ -1,12 +1,8 @@
 import 'package:cost_handler/presentation/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Hive.initFlutter();
-  Hive.registerAdapter(TravelEntityAdapter());
 
   runApp(const MyApp());
 }

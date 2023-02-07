@@ -1,21 +1,26 @@
-import 'package:hive/hive.dart';
 part 'cost_entity.g.dart';
 
-@HiveType(typeId: 0)
 class CostEntity {
-  @HiveField(0)
   final double value;
-  @HiveField(1)
   final String? description;
-  @HiveField(2)
-  final int sourceUserId;
-  @HiveField(3)
-  final int? destinationUserId;
+  final String? destinationUserName;
 
   CostEntity({
     this.description,
     required this.value,
-    required this.sourceUserId,
-    this.destinationUserId,
+    this.destinationUserName,
   });
+
+  factory CostEntity.fromMap(Map<String, dynamic> json) => CostEntity(
+      value: json["value"],
+      description: json["description"],
+      destinationUserName: json["destinationUserName"]);
+
+  Map<String, dynamic> toMap() {
+    return {
+      "value": value,
+      "description": description,
+      "destinationUserName": destinationUserName,
+    };
+  }
 }
