@@ -1,26 +1,32 @@
+import 'package:json_annotation/json_annotation.dart';
+
 part 'cost_entity.g.dart';
 
+@JsonSerializable()
 class CostEntity {
   final double value;
   final String? description;
-  final String? destinationUserName;
+  final List<String> receivers;
+  final String spender;
 
-  CostEntity({
+  CostEntity({required this.receivers, required this.spender,
     this.description,
     required this.value,
-    this.destinationUserName,
   });
 
   factory CostEntity.fromMap(Map<String, dynamic> json) => CostEntity(
       value: json["value"],
       description: json["description"],
-      destinationUserName: json["destinationUserName"]);
+      receivers: json["receivers"].map((e) => e).toList(),
+      spender: json["spender"],
+  );
 
   Map<String, dynamic> toMap() {
     return {
       "value": value,
       "description": description,
-      "destinationUserName": destinationUserName,
+      "receivers": receivers,
+      "spender": spender,
     };
   }
 }
