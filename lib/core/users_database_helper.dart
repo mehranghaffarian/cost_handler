@@ -13,7 +13,6 @@ class UsersDatabaseHelper {
   // only have a single app-wide reference to the database
   static Database? _database;
   Future<Database> get database async {
-
     return _database ??= await _initDatabase();
   }
 

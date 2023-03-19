@@ -1,3 +1,5 @@
+import 'package:cost_handler/presentation/add_cost_page.dart';
+import 'package:cost_handler/presentation/add_user_page.dart';
 import 'package:cost_handler/presentation/home_page.dart';
 import 'package:flutter/material.dart';
 
@@ -51,7 +53,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: HomePage.routeName,
       routes: {
-        HomePage.routeName: (ctx) => HomePage(),
+        HomePage.routeName: (ctx) => const HomePage(),
+        AddUserPage.routeName: (ctx) => const AddUserPage(),
+        AddCostPage.routeName: (ctx) => const AddCostPage(),
        },
     );
   }

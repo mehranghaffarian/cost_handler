@@ -4,29 +4,16 @@ part 'cost_entity.g.dart';
 
 @JsonSerializable()
 class CostEntity {
-  final double value;
+  final String spenderUserName;
+  final double cost;
   final String? description;
-  final List<String> receivers;
-  final String spender;
+  final List<String> receiverUsersNames;
 
-  CostEntity({required this.receivers, required this.spender,
+  CostEntity({required this.receiverUsersNames, required this.spenderUserName,
     this.description,
-    required this.value,
+    required this.cost,
   });
 
-  factory CostEntity.fromMap(Map<String, dynamic> json) => CostEntity(
-      value: json["value"],
-      description: json["description"],
-      receivers: json["receivers"].map((e) => e).toList(),
-      spender: json["spender"],
-  );
-
-  Map<String, dynamic> toMap() {
-    return {
-      "value": value,
-      "description": description,
-      "receivers": receivers,
-      "spender": spender,
-    };
-  }
+  factory CostEntity.fromJson(Map<String, dynamic> json) => _$CostEntityFromJson(json);
+  Map<String, dynamic> toJson() => _$CostEntityToJson(this);
 }
