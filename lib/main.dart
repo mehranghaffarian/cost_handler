@@ -1,6 +1,6 @@
-import 'package:cost_handler/presentation/add_cost_page.dart';
-import 'package:cost_handler/presentation/add_user_page.dart';
-import 'package:cost_handler/presentation/home_page.dart';
+import 'package:cost_handler/presentation/pages/add_cost_page.dart';
+import 'package:cost_handler/presentation/pages/add_user/add_user_page.dart';
+import 'package:cost_handler/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main() async{
@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
       initialRoute: HomePage.routeName,
       routes: {
         HomePage.routeName: (ctx) => const HomePage(),
-        AddUserPage.routeName: (ctx) => const AddUserPage(),
+        AddUserPage.routeName: (ctx) => AddUserPage(),
         AddCostPage.routeName: (ctx) => const AddCostPage(),
        },
     );
