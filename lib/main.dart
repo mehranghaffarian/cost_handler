@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
       routes: {
         HomePage.routeName: (ctx) => const HomePage(),
         AddUserPage.routeName: (ctx) => AddUserPage(),
-        AddCostPage.routeName: (ctx) => const AddCostPage(),
+        AddCostPage.routeName: (ctx) => AddCostPage(),
        },
     );
   }

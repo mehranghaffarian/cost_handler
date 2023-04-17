@@ -7,13 +7,14 @@ import 'package:flutter/material.dart';
 class HomePage extends StatefulWidget {
   static const routeName = "home_page";
 
-  const HomePage({Key? key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  bool isPressed = false;
   final List<CostEntity> costs = [];
 
   @override
@@ -28,7 +29,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    Color shadowColor = Colors.redAccent.shade700;
+    Color backgroundColor = shadowColor.withOpacity(0.7);
+    // Color shadowColor = Colors.blueAccent.shade700;
+    // Color shadowColor = Colors.purpleAccent.shade700;
+
     return Scaffold(
+      backgroundColor: const Color(0xFF00000F),
       appBar: AppBar(
         title: const Text("Home Page"),
         actions: [
@@ -46,9 +53,60 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Padding(
           padding: const EdgeInsets.all(10),
-          child: ListView.builder(
-            itemBuilder: (ctx, index) => _buildRow(costs[index]),
+          child: Center(
+            child: Listener(
+              onPointerDown: (_) => setState(() {
+                isPressed = true;
+              }),
+              onPointerUp: (_) => setState(() {
+                isPressed = false;
+              }),
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 100),
+                decoration: BoxDecoration(
+                    color: isPressed ? backgroundColor : null,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      for (double i = 1; i < 5; i++)
+                        BoxShadow(
+                            spreadRadius: -1,
+                            blurStyle: BlurStyle.outer,
+                            color: Colors.white,
+                            blurRadius: (isPressed ? 5 : 3) * i),
+                      for (double i = 1; i < 5; i++)
+                        BoxShadow(
+                            spreadRadius: -1,
+                            blurStyle: BlurStyle.outer,
+                            color: shadowColor,
+                            blurRadius: (isPressed ? 5 : 3) * i)
+                    ]),
+                child: TextButton(
+                  onHover: (hovered) => setState(() {
+                    this.isPressed = hovered;
+                  }),
+                  style: TextButton.styleFrom(
+                    side: BorderSide(color: Colors.white, width: 4),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                  onPressed: () {},
+                  child: Text(
+                    "neon button",
+                    style: TextStyle(
+                      color: Colors.white,
+                      shadows: [
+                        for (double i = 1; i < (isPressed ? 8 : 4); i++)
+                          Shadow(color: shadowColor, blurRadius: i * 3),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           )),
+      // child: ListView.builder(
+      //   itemBuilder: (ctx, index) => _buildRow(costs[index]),
+      // )),
     );
   }
 

@@ -107,8 +107,6 @@ class _AddCostPageState extends State<AddCostPage> {
   _createReceiversList() {
     return receivers
         .map((e) => InkWell(child: Chip(label: Text(e.userName),), onTap: (){},))
-        .toList().add(const InkWell(child: Icon(Icons.add), onTap: () {},));
+        .toList().add(InkWell(child: Icon(Icons.add), onTap: () {},));
   }
-
-
 }
