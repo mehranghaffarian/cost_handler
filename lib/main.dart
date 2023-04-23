@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: HomePage.routeName,
       routes: {
-        HomePage.routeName: (ctx) => const HomePage(),
+        HomePage.routeName: (ctx) => HomePage(),
         AddUserPage.routeName: (ctx) => AddUserPage(),
         AddCostPage.routeName: (ctx) => AddCostPage(),
        },

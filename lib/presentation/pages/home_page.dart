@@ -2,6 +2,7 @@ import 'package:cost_handler/core/session_database_helper.dart';
 import 'package:cost_handler/domain/cost_entity.dart';
 import 'package:cost_handler/presentation/pages/add_cost_page.dart';
 import 'package:cost_handler/presentation/pages/add_user/add_user_page.dart';
+import 'package:cost_handler/presentation/widgets/neon_button.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,7 +15,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool isPressed = false;
   final List<CostEntity> costs = [];
 
   @override
@@ -29,11 +29,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Color shadowColor = Colors.redAccent.shade700;
-    Color backgroundColor = shadowColor.withOpacity(0.7);
-    // Color shadowColor = Colors.blueAccent.shade700;
-    // Color shadowColor = Colors.purpleAccent.shade700;
-
     return Scaffold(
       backgroundColor: const Color(0xFF00000F),
       appBar: AppBar(
@@ -51,59 +46,9 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Center(
-            child: Listener(
-              onPointerDown: (_) => setState(() {
-                isPressed = true;
-              }),
-              onPointerUp: (_) => setState(() {
-                isPressed = false;
-              }),
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 100),
-                decoration: BoxDecoration(
-                    color: isPressed ? backgroundColor : null,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      for (double i = 1; i < 5; i++)
-                        BoxShadow(
-                            spreadRadius: -1,
-                            blurStyle: BlurStyle.outer,
-                            color: Colors.white,
-                            blurRadius: (isPressed ? 5 : 3) * i),
-                      for (double i = 1; i < 5; i++)
-                        BoxShadow(
-                            spreadRadius: -1,
-                            blurStyle: BlurStyle.outer,
-                            color: shadowColor,
-                            blurRadius: (isPressed ? 5 : 3) * i)
-                    ]),
-                child: TextButton(
-                  onHover: (hovered) => setState(() {
-                    this.isPressed = hovered;
-                  }),
-                  style: TextButton.styleFrom(
-                    side: BorderSide(color: Colors.white, width: 4),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                  onPressed: () {},
-                  child: Text(
-                    "neon button",
-                    style: TextStyle(
-                      color: Colors.white,
-                      shadows: [
-                        for (double i = 1; i < (isPressed ? 8 : 4); i++)
-                          Shadow(color: shadowColor, blurRadius: i * 3),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          )),
+      body: Center(
+        child: NeonButton(),
+      ),
       // child: ListView.builder(
       //   itemBuilder: (ctx, index) => _buildRow(costs[index]),
       // )),

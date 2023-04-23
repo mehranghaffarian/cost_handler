@@ -23,7 +23,7 @@ class SessionDatabaseHelper {
   _initDatabase() async {
     final documentsDirectory = await getDatabasesPath();
     final path = join(documentsDirectory, _databaseName);
-    return await openDatabase(path, onCreate: _onCreate);
+    return await openDatabase(path, onCreate: _onCreate, version: 1);
   }
 
   // SQL code to create the database table
