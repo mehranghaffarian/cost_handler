@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 
 class UsersDatabaseHelper {
   static const _databaseName = 'users_database.db';
-  static const table = 'users_table';
+  static const table = 'USERS';
 
   final String userNameColumn = "userName";
   // make this a singleton class
@@ -27,7 +27,7 @@ class UsersDatabaseHelper {
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     // await db.execute('''CREATE TABLE COSTS(value Double, description VARCHAR(200), destinationUserName VARCHAR(50), ID int, PRIMARY KEY (id));''');
-    await db.execute('''CREATE TABLE USERS($userNameColumn VARCHAR($userNameColumn), PRIMARY KEY (receiverUserName));''');
+    await db.execute('''CREATE TABLE USERS($userNameColumn VARCHAR(100), PRIMARY KEY($userNameColumn));''');
   }
 
   // Helper methods

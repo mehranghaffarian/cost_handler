@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 
 class SessionDatabaseHelper {
   static const _databaseName = 'costs_database.db';
-  static const table = 'costs_table';
+  static const table = 'COSTS';
 
   // make this a singleton class
   SessionDatabaseHelper._privateConstructor();
