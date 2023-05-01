@@ -14,14 +14,18 @@ class UsersDatabaseHelper {
   // only have a single app-wide reference to the database
   static Database? _database;
   Future<Database> get database async {
-    return _database ??= await _initDatabase();
+    _database ??= await _initDatabase();
+    if(!_database!.isOpen) {
+      _database = await _initDatabase();
+    }
+    return _database!;
   }
 
   // this opens the database (and creates it if it doesn't exist)
   _initDatabase() async {
     final documentsDirectory = await getDatabasesPath();
     final path = join(documentsDirectory, _databaseName);
-    return await openDatabase(path, onCreate: _onCreate);
+    return await openDatabase(path, onCreate: _onCreate, version: 1);
   }
 
   // SQL code to create the database table

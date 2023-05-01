@@ -16,7 +16,11 @@ class SessionDatabaseHelper {
   static Database? _database;
 
   Future<Database> get database async {
-    return _database ??= await _initDatabase();
+    _database ??= await _initDatabase();
+    if(!_database!.isOpen) {
+      _database = await _initDatabase();
+    }
+    return _database!;
   }
 
   // this opens the database (and creates it if it doesn't exist)
