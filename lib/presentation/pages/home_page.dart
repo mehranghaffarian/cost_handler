@@ -2,6 +2,7 @@ import 'package:cost_handler/core/session_database_helper.dart';
 import 'package:cost_handler/domain/cost_entity.dart';
 import 'package:cost_handler/presentation/pages/add_cost_page.dart';
 import 'package:cost_handler/presentation/pages/add_user/add_user_page.dart';
+import 'package:cost_handler/presentation/widgets/mg_choosable_chip.dart';
 import 'package:cost_handler/presentation/widgets/neon_button.dart';
 import 'package:flutter/material.dart';
 
@@ -30,28 +31,27 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF00000F),
       appBar: AppBar(
         title: const Text("Home Page"),
         actions: [
           IconButton(
             onPressed: () =>
                 Navigator.of(context).pushNamed(AddCostPage.routeName),
-            icon: const Icon(Icons.add_shopping_cart_outlined),
+            icon: const Icon(Icons.add_shopping_cart_outlined, color: Colors.black),
           ),
           IconButton(
             onPressed: () =>
                 Navigator.of(context).pushNamed(AddUserPage.routeName),
-            icon: const Icon(Icons.person_add_alt_1_sharp),
+            icon: const Icon(Icons.person_add_alt_1_sharp, color: Colors.black,),
           ),
         ],
       ),
-      body: Center(
-        child: NeonButton(),
+      body:
+      Center(
+        child: costs.isEmpty ? const Text("There is no cost yet!") : ListView.builder(itemCount: costs.length,
+          itemBuilder: (ctx, index) => _buildRow(costs[index]),
+        ),
       ),
-      // child: ListView.builder(
-      //   itemBuilder: (ctx, index) => _buildRow(costs[index]),
-      // )),
     );
   }
 

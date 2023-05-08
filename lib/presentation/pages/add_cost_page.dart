@@ -1,13 +1,14 @@
+import 'package:cost_handler/core/extensions/show_snack.dart';
 import 'package:cost_handler/core/users_database_helper.dart';
 import 'package:cost_handler/domain/user_entity.dart';
 import 'package:cost_handler/presentation/widgets/mg_appbar.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cost_handler/presentation/widgets/mg_choosable_chip.dart';
 import 'package:flutter/material.dart';
 
 class AddCostPage extends StatefulWidget {
   static const routeName = "add_cost_page";
 
-  AddCostPage({Key? key}) : super(key: key);
+  const AddCostPage({Key? key}) : super(key: key);
 
   @override
   State<AddCostPage> createState() => _AddCostPageState();
@@ -23,17 +24,15 @@ class _AddCostPageState extends State<AddCostPage> {
   final List<UserEntity> receivers = [];
   final List<UserEntity> allUsers = [];
 
-
   @override
   void initState() {
+    super.initState();
     setState(() {
       UsersDatabaseHelper.instance
           .queryAllRows()
           .then((value) => allUsers.addAll(value));
     });
-    super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,7 @@ class _AddCostPageState extends State<AddCostPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(20),
           child: Form(
             child: Column(
               children: [
@@ -90,11 +89,29 @@ class _AddCostPageState extends State<AddCostPage> {
                   controller: descriptionController,
                 ),
                 const SizedBox(height: 10),
-                Card(elevation: 5,
+                SizedBox(
+                  height: 200,
                   child: GridView(
-                    gridDelegate:  const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 3),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 1),
                     children: _createReceiversList(),
                   ),
+                ),const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+
+                    });
+                    final result = _addCost();
+                    if (result) {
+                      context.showSnack("User added successfully");
+                      Navigator.of(context).pop();
+                    } else {
+                      context.showSnack("useName maximum length is 75");
+                    }
+                  },
+                  child: const Text("Add user"),
                 ),
               ],
             ),
@@ -104,9 +121,28 @@ class _AddCostPageState extends State<AddCostPage> {
     );
   }
 
-  _createReceiversList() {
-    return receivers
-        .map((e) => InkWell(child: Chip(label: Text(e.userName),), onTap: (){},))
-        .toList().add(InkWell(child: Icon(Icons.add), onTap: () {},));
+  List<Widget> _createReceiversList() {
+    return allUsers.isEmpty
+        ? const [Text("There is no user yet!")]
+        : allUsers
+            .map(
+              (e) => SizedBox(width: 50, height: 50,
+                child: MGChoosableChip(
+                  label: e.userName,
+                  onTap: (newValue) {
+                    if (newValue) {
+                      receivers.add(e);
+                    } else {
+                      receivers.remove(e);
+                    }
+                  },
+                ),
+              ),
+            )
+            .toList();
+  }
+
+  bool _addCost() {
+    return false;
   }
 }

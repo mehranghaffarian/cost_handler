@@ -43,7 +43,7 @@ class AddUserPage extends StatelessWidget {
                   context.showSnack("useName maximum length is 75");
                 }
               },
-              child: Text("Add user"),
+              child: const Text("Add user"),
             ),
           ],
         ),
@@ -55,7 +55,6 @@ class AddUserPage extends StatelessWidget {
     final givenUserName = addUserNameController.text;
     if (givenUserName.length <= Constants.userNameMaxLen) {
       UsersDatabaseHelper.instance.insert(givenUserName);
-
       return true;
     }
     return false;
