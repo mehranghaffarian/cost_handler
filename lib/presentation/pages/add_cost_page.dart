@@ -1,5 +1,7 @@
 import 'package:cost_handler/core/extensions/show_snack.dart';
+import 'package:cost_handler/core/session_database_helper.dart';
 import 'package:cost_handler/core/users_database_helper.dart';
+import 'package:cost_handler/domain/cost_entity.dart';
 import 'package:cost_handler/domain/user_entity.dart';
 import 'package:cost_handler/presentation/widgets/mg_appbar.dart';
 import 'package:cost_handler/presentation/widgets/mg_choosable_chip.dart';
@@ -15,23 +17,21 @@ class AddCostPage extends StatefulWidget {
 }
 
 class _AddCostPageState extends State<AddCostPage> {
-  final spenderNameController = TextEditingController();
-
   final costController = TextEditingController();
-
   final descriptionController = TextEditingController();
 
+  UserEntity? spender;
   final List<UserEntity> receivers = [];
   final List<UserEntity> allUsers = [];
 
   @override
   void initState() {
+    mounted;
     super.initState();
-    setState(() {
-      UsersDatabaseHelper.instance
-          .queryAllRows()
-          .then((value) => allUsers.addAll(value));
-    });
+
+    UsersDatabaseHelper.instance
+        .queryAllRows()
+        .then((value) => allUsers.addAll(value));
   }
 
   @override
@@ -46,19 +46,7 @@ class _AddCostPageState extends State<AddCostPage> {
           child: Form(
             child: Column(
               children: [
-                TextField(
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    hintText: "spender username",
-                    hintStyle: const TextStyle(color: Colors.black38),
-                    labelText: "spender username",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      gapPadding: 2,
-                    ),
-                  ),
-                  controller: spenderNameController,
-                ),
+                _createSpenderGridView(),
                 const SizedBox(height: 10),
                 TextField(
                   maxLines: 1,
@@ -89,30 +77,28 @@ class _AddCostPageState extends State<AddCostPage> {
                   controller: descriptionController,
                 ),
                 const SizedBox(height: 10),
-                SizedBox(
-                  height: 200,
-                  child: GridView(
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 1),
-                    children: _createReceiversList(),
-                  ),
-                ),const SizedBox(height: 10),
+                _createUsersGridView(receivers),
+                const SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     setState(() {
-
+                      //todo: fix this shit
                     });
                     final result = _addCost();
-                    if (result) {
-                      context.showSnack("User added successfully");
+                    if (await result) {
+                      context.showSnack("Cost added successfully");
                       Navigator.of(context).pop();
                     } else {
-                      context.showSnack("useName maximum length is 75");
+                      context.showSnack("Adding cost failed");
                     }
                   },
-                  child: const Text("Add user"),
+                  child: const Text("Add cost"),
                 ),
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {});
+                    },
+                    child: Text("Refresh")),
               ],
             ),
           ),
@@ -121,28 +107,66 @@ class _AddCostPageState extends State<AddCostPage> {
     );
   }
 
-  List<Widget> _createReceiversList() {
-    return allUsers.isEmpty
-        ? const [Text("There is no user yet!")]
-        : allUsers
-            .map(
-              (e) => SizedBox(width: 50, height: 50,
-                child: MGChoosableChip(
-                  label: e.userName,
-                  onTap: (newValue) {
-                    if (newValue) {
-                      receivers.add(e);
-                    } else {
-                      receivers.remove(e);
-                    }
-                  },
-                ),
-              ),
-            )
-            .toList();
+  Future<bool> _addCost() async {
+    final cost = CostEntity(
+        receiverUsersNames: receivers.map((e) => e.userName).toList(),
+        spenderUserName: spender?.userName ?? "Unknown",
+        cost: double.tryParse(costController.text) ?? 0,
+        description: descriptionController.text);
+
+    final res = await SessionDatabaseHelper.instance.insert(cost);
+    return res != 0;
   }
 
-  bool _addCost() {
-    return false;
+  _createUsersGridView(List<UserEntity> targetUsers) {
+    return SizedBox(
+      height: 200,
+      child: allUsers.isEmpty
+          ? const Text("There is no user yet!")
+          : ListView.builder(
+              // gridDelegate:
+              //     const SliverGridDelegateWithMaxCrossAxisExtent(
+              //         maxCrossAxisExtent: 4),
+              itemCount: allUsers.length,
+              itemBuilder: (BuildContext context, int index) {
+                final user = allUsers[index];
+                return MGChoosableChip(
+                  label: user.userName,
+                  onTap: (newValue) {
+                    if (newValue) {
+                      receivers.add(user);
+                    } else {
+                      receivers.remove(user);
+                    }
+                  },
+                );
+              },
+            ),
+    );
+  }
+
+  _createSpenderGridView() {
+    return SizedBox(
+      height: 200,
+      child: allUsers.isEmpty
+          ? const Text("There is no user yet!")
+          : ListView.builder(
+              // gridDelegate:
+              //     const SliverGridDelegateWithMaxCrossAxisExtent(
+              //         maxCrossAxisExtent: 4),
+              itemCount: allUsers.length,
+              itemBuilder: (BuildContext context, int index) {
+                final user = allUsers[index];
+                return MGChoosableChip(
+                  label: user.userName,
+                  onTap: (newValue) {
+                    if (newValue) {
+                      spender = user;
+                    }
+                  },
+                );
+              },
+            ),
+    );
   }
 }

@@ -14,7 +14,7 @@ class AddUserPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MGAppbar(title: "Add User"),
+      appBar: const MGAppbar(title: "Add User"),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -34,13 +34,13 @@ class AddUserPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async{
                 final result = _addUser();
-                if (result) {
+                if (await result) {
                   context.showSnack("User added successfully");
                   Navigator.of(context).pop();
                 } else {
-                  context.showSnack("useName maximum length is 75");
+                  context.showSnack("Adding user name failed");
                 }
               },
               child: const Text("Add user"),
@@ -51,11 +51,11 @@ class AddUserPage extends StatelessWidget {
     );
   }
 
-  bool _addUser() {
+  Future<bool> _addUser() async {
     final givenUserName = addUserNameController.text;
     if (givenUserName.length <= Constants.userNameMaxLen) {
-      UsersDatabaseHelper.instance.insert(givenUserName);
-      return true;
+      final res = await UsersDatabaseHelper.instance.insert(givenUserName);
+      return res != 0;
     }
     return false;
   }
