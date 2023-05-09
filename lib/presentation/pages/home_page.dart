@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 10),
           Text("cost: ${cost.cost}"),
           const SizedBox(height: 10),
-          Text("users: ${cost.receiverUsersNames.map((e) => "$e, ")}"),
+          Text("users: ${cost.receiverUsersNames}"),
         ],
       ),
     );

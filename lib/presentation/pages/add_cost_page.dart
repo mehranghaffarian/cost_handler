@@ -109,7 +109,7 @@ class _AddCostPageState extends State<AddCostPage> {
 
   Future<bool> _addCost() async {
     final cost = CostEntity(
-        receiverUsersNames: receivers.map((e) => e.userName).toList(),
+        receiverUsersNames: receivers.map((e) => e.userName).toList().join(", "),
         spenderUserName: spender?.userName ?? "Unknown",
         cost: double.tryParse(costController.text) ?? 0,
         description: descriptionController.text);

@@ -7,7 +7,7 @@ class CostEntity {
   final String spenderUserName;
   final double cost;
   final String? description;
-  final List<String> receiverUsersNames;
+  final String receiverUsersNames;
 
   CostEntity({required this.receiverUsersNames, required this.spenderUserName,
     this.description,

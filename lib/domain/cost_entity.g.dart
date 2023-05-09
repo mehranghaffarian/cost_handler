@@ -7,9 +7,7 @@ part of 'cost_entity.dart';
 // **************************************************************************
 
 CostEntity _$CostEntityFromJson(Map<String, dynamic> json) => CostEntity(
-      receiverUsersNames: (json['receiverUsersNames'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
+      receiverUsersNames: json['receiverUsersNames'] as String,
       spenderUserName: json['spenderUserName'] as String,
       description: json['description'] as String?,
       cost: (json['cost'] as num).toDouble(),
