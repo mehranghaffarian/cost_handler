@@ -2,8 +2,6 @@ import 'package:cost_handler/core/session_database_helper.dart';
 import 'package:cost_handler/domain/cost_entity.dart';
 import 'package:cost_handler/presentation/pages/add_cost_page.dart';
 import 'package:cost_handler/presentation/pages/add_user/add_user_page.dart';
-import 'package:cost_handler/presentation/widgets/mg_choosable_chip.dart';
-import 'package:cost_handler/presentation/widgets/neon_button.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,16 +14,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<CostEntity> costs = [];
+  List<CostEntity> costs = [];
+  bool isLoading = true;
 
   @override
   void initState() {
-    setState(() {
-      SessionDatabaseHelper.instance
-          .queryAllRows()
-          .then((value) => costs.addAll(value));
-    });
     super.initState();
+    Future.delayed(
+      Duration.zero,
+      () => _getCosts(),
+    );
+  }
+
+  _getCosts() {
+    SessionDatabaseHelper.instance.queryAllRows().then((value) {
+      costs = value;
+      isLoading = false;
+      setState(() {});
+    });
   }
 
   @override
@@ -38,8 +44,9 @@ class _HomePageState extends State<HomePage> {
             onPressed: () async {
               final res =
                   await Navigator.of(context).pushNamed(AddCostPage.routeName);
+              isLoading = true;
               if (res == true) {
-                setState(() {});
+                _getCosts();
               }
             },
             icon: const Icon(Icons.add_shopping_cart_outlined,
@@ -56,12 +63,14 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Center(
-        child: costs.isEmpty
-            ? const Text("There is no cost yet!")
-            : ListView.builder(
-                itemCount: costs.length,
-                itemBuilder: (ctx, index) => _buildRow(costs[index]),
-              ),
+        child: isLoading
+            ? const CircularProgressIndicator()
+            : costs.isEmpty
+                ? const Text("There is no cost yet!")
+                : ListView.builder(
+                    itemCount: costs.length,
+                    itemBuilder: (ctx, index) => _buildRow(costs[index]),
+                  ),
       ),
     );
   }

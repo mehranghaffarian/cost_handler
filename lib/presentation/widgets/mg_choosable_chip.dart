@@ -20,7 +20,6 @@ class _MGChoosableChipState extends State<MGChoosableChip> {
       width: 50,
       child: InkWell(
         onTap: () => setState(() {
-          debugPrint("${widget.isChosen}");
           widget.isChosen = !widget.isChosen;
           widget.onTap(widget.isChosen);
         }),

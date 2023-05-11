@@ -45,6 +45,7 @@ class AddUserPage extends StatelessWidget {
               },
               child: const Text("Add user"),
             ),
+            const SizedBox(height: 10),
           ],
         ),
       ),

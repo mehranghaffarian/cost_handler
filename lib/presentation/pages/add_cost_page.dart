@@ -21,17 +21,20 @@ class _AddCostPageState extends State<AddCostPage> {
   final descriptionController = TextEditingController();
 
   UserEntity? spender;
+  var isLoading = true;
   final List<UserEntity> receivers = [];
   final List<UserEntity> allUsers = [];
 
   @override
   void initState() {
-    mounted;
     super.initState();
-
-    UsersDatabaseHelper.instance
-        .queryAllRows()
-        .then((value) => allUsers.addAll(value));
+    Future.delayed(
+        Duration.zero,
+        () => UsersDatabaseHelper.instance.queryAllRows().then((value) {
+              allUsers.addAll(value);
+              isLoading = false;
+              setState(() {});
+            }));
   }
 
   @override
@@ -46,7 +49,9 @@ class _AddCostPageState extends State<AddCostPage> {
           child: Form(
             child: Column(
               children: [
-                _createSpenderGridView(),
+                isLoading
+                    ? const CircularProgressIndicator()
+                    : _createSpenderGridView(),
                 const SizedBox(height: 10),
                 TextField(
                   maxLines: 1,
@@ -77,7 +82,9 @@ class _AddCostPageState extends State<AddCostPage> {
                   controller: descriptionController,
                 ),
                 const SizedBox(height: 10),
-                _createUsersGridView(receivers),
+                isLoading
+                    ? const CircularProgressIndicator()
+                    : _createUsersGridView(receivers),
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () async {
@@ -94,11 +101,6 @@ class _AddCostPageState extends State<AddCostPage> {
                   },
                   child: const Text("Add cost"),
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {});
-                    },
-                    child: const Text("Refresh")),
               ],
             ),
           ),
@@ -109,7 +111,8 @@ class _AddCostPageState extends State<AddCostPage> {
 
   Future<bool> _addCost() async {
     final cost = CostEntity(
-        receiverUsersNames: receivers.map((e) => e.userName).toList().join(", "),
+        receiverUsersNames:
+            receivers.map((e) => e.userName).toList().join(", "),
         spenderUserName: spender?.userName ?? "Unknown",
         cost: double.tryParse(costController.text) ?? 0,
         description: descriptionController.text);

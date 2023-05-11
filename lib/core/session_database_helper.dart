@@ -1,4 +1,5 @@
 import 'package:cost_handler/domain/cost_entity.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -39,14 +40,12 @@ class SessionDatabaseHelper {
   Future<int> insert(CostEntity cost) async {
     final db = await instance.database;
     final res = await db.insert(table, cost.toJson());
-    db.close();
     return res;
   }
 
   Future<List<CostEntity>> queryAllRows() async {
     final db = await instance.database;
     final res = (await db.query(table)).map((e) => CostEntity.fromJson(e)).toList();
-    db.close();
     return res;
   }
 }
