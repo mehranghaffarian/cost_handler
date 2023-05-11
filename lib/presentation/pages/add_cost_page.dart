@@ -87,7 +87,7 @@ class _AddCostPageState extends State<AddCostPage> {
                     final result = _addCost();
                     if (await result) {
                       context.showSnack("Cost added successfully");
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(true);
                     } else {
                       context.showSnack("Adding cost failed");
                     }
@@ -98,7 +98,7 @@ class _AddCostPageState extends State<AddCostPage> {
                     onPressed: () {
                       setState(() {});
                     },
-                    child: Text("Refresh")),
+                    child: const Text("Refresh")),
               ],
             ),
           ),

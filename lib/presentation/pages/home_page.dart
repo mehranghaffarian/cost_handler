@@ -35,22 +35,33 @@ class _HomePageState extends State<HomePage> {
         title: const Text("Home Page"),
         actions: [
           IconButton(
-            onPressed: () =>
-                Navigator.of(context).pushNamed(AddCostPage.routeName),
-            icon: const Icon(Icons.add_shopping_cart_outlined, color: Colors.black),
+            onPressed: () async {
+              final res =
+                  await Navigator.of(context).pushNamed(AddCostPage.routeName);
+              if (res == true) {
+                setState(() {});
+              }
+            },
+            icon: const Icon(Icons.add_shopping_cart_outlined,
+                color: Colors.black),
           ),
           IconButton(
             onPressed: () =>
                 Navigator.of(context).pushNamed(AddUserPage.routeName),
-            icon: const Icon(Icons.person_add_alt_1_sharp, color: Colors.black,),
+            icon: const Icon(
+              Icons.person_add_alt_1_sharp,
+              color: Colors.black,
+            ),
           ),
         ],
       ),
-      body:
-      Center(
-        child: costs.isEmpty ? const Text("There is no cost yet!") : ListView.builder(itemCount: costs.length,
-          itemBuilder: (ctx, index) => _buildRow(costs[index]),
-        ),
+      body: Center(
+        child: costs.isEmpty
+            ? const Text("There is no cost yet!")
+            : ListView.builder(
+                itemCount: costs.length,
+                itemBuilder: (ctx, index) => _buildRow(costs[index]),
+              ),
       ),
     );
   }
