@@ -14,7 +14,7 @@ class SettleUpPage extends StatefulWidget {
 class _SettleUpPageState extends State<SettleUpPage> {
   var isLoading = true;
   List<CostEntity> costs = [];
-  Map<String, ShareEntity> shares = {};
+  Map<String, List<ShareEntity>> shares = {};
 
   @override
   void initState() {
@@ -58,12 +58,28 @@ class _SettleUpPageState extends State<SettleUpPage> {
       final costUsersLen = costUsers.length;
 
       for (int i = 0; i < costUsersLen; i++) {
+        final share = ShareEntity(
+          borrower: costUsers[i],
+          lender: e.spenderUserName,
+          cost: e.cost / costUsersLen,
+          description: e.description ?? "Unknown",
+        );
 
+        if (shares.containsKey(costUsers[i])) {
+          shares.update(costUsers[i], (value) {
+            value.add(
+              share,
+            );
+            return value;
+          });
+        }
+        else{
+          shares.putIfAbsent(costUsers[i], () => [share]);
+        }
       }
     });
 
     //really settling up
-
 
     isLoading = false;
     setState(() {});
