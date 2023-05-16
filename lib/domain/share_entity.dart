@@ -2,7 +2,7 @@ class ShareEntity{
   final String borrower;
   final String lender;
   final double cost;
-  final String description;
+  final String? description;
 
-  ShareEntity({required this.borrower, required this.lender, required this.cost, required this.description});
+  ShareEntity({required this.borrower, required this.lender, required this.cost, this.description});
 }
