@@ -91,20 +91,25 @@ class _SettleUpPageState extends State<SettleUpPage> {
       }
     }
     simplifiedShares.addAll(shares);
-    // settling up
 
-    //adding the shares with the same lender and borrower
+    // settling up
     for (int i = 0; i < simplifiedShares.length; i++) {
       final user = simplifiedShares.keys.elementAt(i);
       final userShares = simplifiedShares[user];
 
       if (userShares != null) {
-        final userSharesIterator = userShares.iterator;
-        while (userSharesIterator.moveNext()) {
-          final share = userSharesIterator.current;
+        for (int j = 0; j < userShares.length; j++) {
+          final share = userShares[j];
           final shareWithSameLenderIndex = userShares
               .indexWhere((element) => element.lender == share.lender);
-          if (shareWithSameLenderIndex != -1) {
+
+          //eliminating costs that the borrower and lender are the same
+          if (share.lender == share.borrower) {
+            userShares.remove(share);
+            j--;
+          }
+          //adding the shares with the same lender and borrower
+          else if (shareWithSameLenderIndex != -1) {
             userShares.add(
               ShareEntity(
                 borrower: share.borrower,
@@ -112,78 +117,88 @@ class _SettleUpPageState extends State<SettleUpPage> {
                 cost: share.cost + userShares[shareWithSameLenderIndex].cost,
               ),
             );
-            userShares.remove(share);
             userShares.removeAt(shareWithSameLenderIndex);
+            userShares.remove(share);
+            j--;
           }
         }
         simplifiedShares.update(user, (value) => userShares);
       }
     }
 
-    //simplifying shares, which has two rules
-    //1. 1->2 and 2->3 can be simplified to 1->3
-    //2. 1->2 and 2->1 can be simplified to empty ?!
+    //simplifying shares, which has one rule
+    //0. 1->2 and 2->3 and 1->3 can be simplified to (1->3) and removing one of the first two
     for (int i = 0; i < simplifiedShares.length; i++) {
       final firstUser = simplifiedShares.keys.elementAt(i);
       final firstUserShares = simplifiedShares[firstUser];
 
       if (firstUserShares != null) {
-        final firstUserSharesIterator = firstUserShares.iterator;
-        while(firstUserSharesIterator.moveNext()){
-          final firstUserShare = firstUserSharesIterator.current;
-          final secondUserShares = simplifiedShares[firstUserShare.lender];
+        for (int j = 0; j < firstUserShares.length; j++) {
+          final firstUserFirstShare = firstUserShares[j];
+          final secondUserShares = simplifiedShares[firstUserFirstShare.lender];
 
           if (secondUserShares != null) {
-            final secondUserSharesIterator =  secondUserShares.iterator;
-            while(secondUserSharesIterator.moveNext()) {
-              final secondUserShare = secondUserSharesIterator.current;
-              //implementing the second rule
-              if (secondUserShare.lender == firstUser) {
-                secondUserShares.remove(secondUserShare);
-                firstUserShares.remove(firstUserShare);
-                if (firstUserShare.cost > secondUserShare.cost) {
-                  final firstUserNewShare = ShareEntity(
-                    borrower: firstUserShare.borrower,
-                    lender: firstUserShare.lender,
-                    cost: firstUserShare.cost - secondUserShare.cost,
+            for (int k = 0; k < secondUserShares.length; k++) {
+              final secondUserShare = secondUserShares[k];
+              final firstUserShareWithTheSameLenderIndex =
+                  firstUserShares.indexWhere(
+                      (element) => element.lender == secondUserShare.lender);
+
+              if (firstUserShareWithTheSameLenderIndex != -1) {
+                final firstUserSecondShare =
+                    firstUserShares[firstUserShareWithTheSameLenderIndex];
+                //(1->2)*(x+y) and (2->3)(x) and (1->3)*z can be simplified to
+                //(1->2)*y and (1->3)*(z+x)
+                if (firstUserFirstShare.cost > secondUserShare.cost) {
+                  final firstUserNewFirstShare = ShareEntity(
+                    borrower: firstUserFirstShare.borrower,
+                    lender: firstUserFirstShare.lender,
+                    cost: firstUserFirstShare.cost - secondUserShare.cost,
                   );
-                  firstUserShares.add(
-                    firstUserNewShare,
+                  final firstUserNewSecondShare = ShareEntity(
+                    borrower: firstUserSecondShare.borrower,
+                    lender: firstUserSecondShare.lender,
+                    cost: firstUserSecondShare.cost + secondUserShare.cost,
                   );
-                } else {
-                  secondUserShares.add(
-                    ShareEntity(
-                      borrower: secondUserShare.borrower,
-                      lender: secondUserShare.lender,
-                      cost: secondUserShare.cost - firstUserShare.cost,
-                    ),
-                  );
+
+                  secondUserShares.remove(secondUserShare);
+                  k--; //to continue simplifying with the new shares
+
+                  firstUserShares.remove(firstUserFirstShare);
+                  firstUserShares.insert(j, firstUserNewFirstShare);
+
+                  firstUserShares.remove(firstUserSecondShare);
+                  firstUserShares.insert(firstUserShareWithTheSameLenderIndex,
+                      firstUserNewSecondShare);
                 }
-              }
-              //implementing first rule
-              else {
-                secondUserShares.remove(secondUserShare);
-                firstUserShares.remove(firstUserShare);
-                if (firstUserShare.cost > secondUserShare.cost) {
-                  final firstUserNewShare = ShareEntity(
-                    borrower: firstUserShare.borrower,
-                    lender: firstUserShare.lender,
-                    cost: firstUserShare.cost - secondUserShare.cost,
+                //(1->2)*(x) and (2->3)(x+y) and (1->3)*z can be simplified to
+                //(2->3)*y and (1->3)*(z+x)
+                else {
+                  final secondUserNewShare = ShareEntity(
+                    borrower: secondUserShare.borrower,
+                    lender: secondUserShare.lender,
+                    cost: secondUserShare.cost - firstUserFirstShare.cost,
                   );
-                  firstUserShares.add(firstUserNewShare);
-                } else {
-                  secondUserShares.add(
-                    ShareEntity(
-                      borrower: secondUserShare.borrower,
-                      lender: secondUserShare.lender,
-                      cost: secondUserShare.cost - firstUserShare.cost,
-                    ),
+                  final firstUserNewSecondShare = ShareEntity(
+                    borrower: firstUserSecondShare.borrower,
+                    lender: firstUserSecondShare.lender,
+                    cost: firstUserSecondShare.cost + firstUserFirstShare.cost,
                   );
+
+                  secondUserShares.remove(secondUserShare);
+                  secondUserShares.insert(k, secondUserNewShare);
+
+                  firstUserShares.remove(firstUserFirstShare);
+
+                  firstUserShares.remove(firstUserSecondShare);
+                  firstUserShares.insert(firstUserShareWithTheSameLenderIndex,
+                      firstUserNewSecondShare);
+                  break;//the target share has been fully simplified
                 }
               }
             }
             simplifiedShares.update(
-              firstUserShare.lender,
+              firstUserFirstShare.lender,
               (value) => secondUserShares,
             );
           }
@@ -191,7 +206,7 @@ class _SettleUpPageState extends State<SettleUpPage> {
         simplifiedShares.update(firstUser, (value) => firstUserShares);
       }
     }
-
+    debugPrint("************\nend of settling up\n************8");
     isLoading = false;
     setState(() {});
   }
