@@ -45,14 +45,18 @@ class _SettleUpPageState extends State<SettleUpPage> {
                     const SizedBox(height: 10),
                     SizedBox(
                       height: 200,
-                      child: ListView(children: _buildSharesWidgets()),
+                      child: ListView(
+                        children: _buildSharesWidgets(shares),
+                      ),
                     ),
                     const SizedBox(height: 30),
                     const Text("Simplified Shares"),
                     const SizedBox(height: 10),
                     SizedBox(
                       height: 200,
-                      child: ListView(children: _buildSettleUpReport()),
+                      child: ListView(
+                        children: _buildSharesWidgets(simplifiedShares),
+                      ),
                     ),
                   ],
                 ),
@@ -63,15 +67,11 @@ class _SettleUpPageState extends State<SettleUpPage> {
 
   _settleUp() {
     //calculating the shares
-    debugPrint(
-        '\n\n**********************************\ncosts len: ${costs.length}\n');
-    //costs.map((e)
     for (CostEntity e in costs) {
       final costUsers = e.receiverUsersNames.split(", ");
       final costUsersLen = costUsers.length;
-      debugPrint(
-          "\n\n**********************************\ncurrent cost receivers: ${e.receiverUsersNames}\n");
-
+      //69
+      debugPrint("******************\nline 69\n**************************");
       for (int i = 0; i < costUsersLen; i++) {
         final share = ShareEntity(
           borrower: costUsers[i],
@@ -91,17 +91,20 @@ class _SettleUpPageState extends State<SettleUpPage> {
       }
     }
     simplifiedShares.addAll(shares);
-
+    //89
+    debugPrint("******************\nline 89\n**************************");
     // settling up
     for (int i = 0; i < simplifiedShares.length; i++) {
       final user = simplifiedShares.keys.elementAt(i);
       final userShares = simplifiedShares[user];
 
       if (userShares != null) {
+        //96
+        debugPrint("******************\nline 96\n**************************");
         for (int j = 0; j < userShares.length; j++) {
           final share = userShares[j];
           final shareWithSameLenderIndex = userShares
-              .indexWhere((element) => element.lender == share.lender);
+              .lastIndexWhere((element) => element.lender == share.lender);
 
           //eliminating costs that the borrower and lender are the same
           if (share.lender == share.borrower) {
@@ -109,7 +112,8 @@ class _SettleUpPageState extends State<SettleUpPage> {
             j--;
           }
           //adding the shares with the same lender and borrower
-          else if (shareWithSameLenderIndex != -1) {
+          else if (shareWithSameLenderIndex != -1 &&
+              shareWithSameLenderIndex > j) {
             userShares.add(
               ShareEntity(
                 borrower: share.borrower,
@@ -121,6 +125,9 @@ class _SettleUpPageState extends State<SettleUpPage> {
             userShares.remove(share);
             j--;
           }
+          //124
+          debugPrint(
+              "******************\nline 124\n**************************");
         }
         simplifiedShares.update(user, (value) => userShares);
       }
@@ -128,11 +135,15 @@ class _SettleUpPageState extends State<SettleUpPage> {
 
     //simplifying shares, which has one rule
     //0. 1->2 and 2->3 and 1->3 can be simplified to (1->3) and removing one of the first two
+    //127
+    debugPrint("******************\nline 127\n**************************");
     for (int i = 0; i < simplifiedShares.length; i++) {
       final firstUser = simplifiedShares.keys.elementAt(i);
       final firstUserShares = simplifiedShares[firstUser];
 
       if (firstUserShares != null) {
+        //133
+        debugPrint("******************\nline 133\n**************************");
         for (int j = 0; j < firstUserShares.length; j++) {
           final firstUserFirstShare = firstUserShares[j];
           final secondUserShares = simplifiedShares[firstUserFirstShare.lender];
@@ -141,10 +152,11 @@ class _SettleUpPageState extends State<SettleUpPage> {
             for (int k = 0; k < secondUserShares.length; k++) {
               final secondUserShare = secondUserShares[k];
               final firstUserShareWithTheSameLenderIndex =
-                  firstUserShares.indexWhere(
+                  firstUserShares.lastIndexWhere(
                       (element) => element.lender == secondUserShare.lender);
 
-              if (firstUserShareWithTheSameLenderIndex != -1) {
+              if (firstUserShareWithTheSameLenderIndex != -1 &&
+                  firstUserShareWithTheSameLenderIndex > j) {
                 final firstUserSecondShare =
                     firstUserShares[firstUserShareWithTheSameLenderIndex];
                 //(1->2)*(x+y) and (2->3)(x) and (1->3)*z can be simplified to
@@ -193,9 +205,12 @@ class _SettleUpPageState extends State<SettleUpPage> {
                   firstUserShares.remove(firstUserSecondShare);
                   firstUserShares.insert(firstUserShareWithTheSameLenderIndex,
                       firstUserNewSecondShare);
-                  break;//the target share has been fully simplified
+                  break; //the target share has been fully simplified
                 }
               }
+              //204
+              debugPrint(
+                  "******************\nline 204\n**************************");
             }
             simplifiedShares.update(
               firstUserFirstShare.lender,
@@ -203,19 +218,38 @@ class _SettleUpPageState extends State<SettleUpPage> {
             );
           }
         }
+        //214
+        debugPrint("******************\nline 214\n**************************");
         simplifiedShares.update(firstUser, (value) => firstUserShares);
       }
+      //207
+      debugPrint("******************\nline 207\n**************************");
     }
-    debugPrint("************\nend of settling up\n************8");
+    debugPrint("******************\nend of settling up\n**************************");
     isLoading = false;
     setState(() {});
   }
+  /*
+  2->1: 3
+  3->1: 12
+  2->1: 12
+  1->3: 24
+  2->3: 24
 
-  List<Widget> _buildSharesWidgets() {
+  3->1: 3
+  2->3: 39
+
+  2->1: 3
+  2->3: 12
+  1->3: 24
+  * */
+
+  List<Widget> _buildSharesWidgets(
+      Map<String, List<ShareEntity>> targetShares) {
     final List<Widget> shareCards = [];
-    final userShares = shares.keys.toList();
+    final users = targetShares.keys.toList();
 
-    for (String user in userShares) {
+    for (String user in users) {
       final tempWidgets = shares[user]
           ?.map(
             (e) => Card(
@@ -245,10 +279,6 @@ class _SettleUpPageState extends State<SettleUpPage> {
     shareCards.add(const Text("End of shares"));
 
     return shareCards;
-  }
-
-  _buildSettleUpReport() {
-    return [const Text("FU2")];
   }
 
   _printShares() {
