@@ -46,7 +46,7 @@ class _SettleUpPageState extends State<SettleUpPage> {
                     SizedBox(
                       height: 200,
                       child: ListView(
-                        children: _buildSharesWidgets(shares),
+                        children: _buildSharesWidgets(targetShares: shares,),
                       ),
                     ),
                     const SizedBox(height: 30),
@@ -55,7 +55,9 @@ class _SettleUpPageState extends State<SettleUpPage> {
                     SizedBox(
                       height: 200,
                       child: ListView(
-                        children: _buildSharesWidgets(simplifiedShares),
+                        children: _buildSharesWidgets(
+                            targetShares: simplifiedShares,
+                            descriptionNeeded: false),
                       ),
                     ),
                   ],
@@ -70,30 +72,36 @@ class _SettleUpPageState extends State<SettleUpPage> {
     _simplifyShares();
   }
 
-  List<Widget> _buildSharesWidgets(
-      Map<String, List<ShareEntity>> targetShares) {
+  List<Widget> _buildSharesWidgets({
+    required Map<String, List<ShareEntity>> targetShares,
+    descriptionNeeded = true,
+  }) {
     final List<Widget> shareCards = [];
     final users = targetShares.keys.toList();
 
     for (String user in users) {
-      final tempWidgets = targetShares[user]
-          ?.map(
-            (e) => Card(
-              elevation: 5,
-              child: Column(
-                children: [
-                  Text("Borrower: ${e.borrower}"),
-                  const SizedBox(height: 10),
-                  Text("Lender: ${e.lender}"),
-                  const SizedBox(height: 10),
-                  Text("Cost: ${e.cost}"),
-                  const SizedBox(height: 10),
-                  Text("Description: ${e.description}"),
-                ],
-              ),
+      final tempWidgets = targetShares[user]?.map(
+        (e) {
+          final columnChildren = [
+            Text("Borrower: ${e.borrower}"),
+            const SizedBox(height: 10),
+            Text("Lender: ${e.lender}"),
+            const SizedBox(height: 10),
+            Text("Cost: ${e.cost}"),
+          ];
+          if (descriptionNeeded) {
+            columnChildren.add(const SizedBox(height: 10));
+            columnChildren.add(Text("Description: ${e.description}"));
+          }
+
+          return Card(
+            elevation: 5,
+            child: Column(
+              children: columnChildren,
             ),
-          )
-          .toList();
+          );
+        },
+      ).toList();
       if (tempWidgets != null) {
         shareCards.addAll(tempWidgets);
       }
@@ -159,7 +167,13 @@ class _SettleUpPageState extends State<SettleUpPage> {
     _printShares();
     debugPrint("\n***********************\n");
     // settling up
-    simplifiedShares.addAll(shares);
+    for (var element in shares.keys) {
+      final tempUser = shares[element];
+      if (tempUser != null) {
+        final tempShares = tempUser.map((e) => ShareEntity(borrower: e.borrower, lender: e.lender, cost: e.cost,)).toList();
+        simplifiedShares.putIfAbsent(element, () => tempShares);
+      }
+    }
     for (int i = 0; i < simplifiedShares.length; i++) {
       final user = simplifiedShares.keys.elementAt(i);
       final userShares = simplifiedShares[user];
@@ -177,7 +191,7 @@ class _SettleUpPageState extends State<SettleUpPage> {
           }
           //adding the shares with the same lender and borrower
           else if (shareWithSameLenderIndex != -1 &&
-              shareWithSameLenderIndex > j) {
+              shareWithSameLenderIndex != j) {
             userShares.add(
               ShareEntity(
                 borrower: share.borrower,
@@ -194,8 +208,10 @@ class _SettleUpPageState extends State<SettleUpPage> {
       }
     }
 
-    //simplifying shares, which has one rule
+    debugPrint("***********\nstarting simplifying\n**********");
+    //simplifying shares, which has two rules
     //0. 1->2 and 2->3 and 1->3 can be simplified to (1->3) and removing one of the first two
+    //1. 1->2 and 2->1 simplifies to empty
     for (int i = 0; i < simplifiedShares.length; i++) {
       final firstUser = simplifiedShares.keys.elementAt(i);
       final firstUserShares = simplifiedShares[firstUser];
@@ -206,7 +222,7 @@ class _SettleUpPageState extends State<SettleUpPage> {
           final secondUserShares = simplifiedShares[firstUserFirstShare.lender];
 
           debugPrint(
-              "******************\ncurrent firstUserFirstShare: ${firstUserFirstShare.toString()}\n**************************");
+              "******************\nnew firstUserFirstShare: ${firstUserFirstShare.toString()}\n**************************");
           if (secondUserShares != null) {
             for (int k = 0; k < secondUserShares.length; k++) {
               final secondUserShare = secondUserShares[k];
@@ -215,9 +231,42 @@ class _SettleUpPageState extends State<SettleUpPage> {
                       (element) => element.lender == secondUserShare.lender);
 
               debugPrint(
-                  "******************\ncurrent secondUserShare: ${secondUserShare.toString()}\n**************************");
-              if (firstUserShareWithTheSameLenderIndex != -1 &&
+                  "******************\nnew secondUserShare: ${secondUserShare.toString()}\n**************************");
+
+              if (secondUserShare.lender == firstUserFirstShare.borrower && firstUserFirstShare.lender == secondUserShare.borrower) {
+                if (secondUserShare.cost > firstUserFirstShare.cost) {
+                  //1. 1->2*(x) and 2->1*(x+y) simplifies to 2->1*(y)
+                  final secondUserNewShare = ShareEntity(
+                    borrower: secondUserShare.borrower,
+                    lender: secondUserShare.lender,
+                    cost: secondUserShare.cost - firstUserFirstShare.cost,
+                  );
+
+                  secondUserShares.insert(k, secondUserNewShare);
+                  secondUserShares.remove(secondUserShare);
+
+                  firstUserShares.remove(firstUserFirstShare);
+                } else {
+                  //1. 1->2*(x+y) and 2->1*(x) simplifies to 1->2*(y)
+                  final firstUserNewFirstShare = ShareEntity(
+                    borrower: firstUserFirstShare.borrower,
+                    lender: firstUserFirstShare.lender,
+                    cost: firstUserFirstShare.cost - secondUserShare.cost,
+                  );
+
+                  secondUserShares.remove(secondUserShare);
+
+                  firstUserShares.insert(j, firstUserNewFirstShare);
+                  firstUserShares.remove(firstUserFirstShare);
+                }
+                j--;
+                debugPrint(
+                    "*************************\n$firstUser share simplified in first if\n**********************");
+                break;
+              } else if (firstUserShareWithTheSameLenderIndex != -1 &&
                   firstUserShareWithTheSameLenderIndex != j) {
+                debugPrint(
+                    "*************************\n$firstUser share simplifying in second if\n**********************");
                 final firstUserSecondShare =
                     firstUserShares[firstUserShareWithTheSameLenderIndex];
 
@@ -242,14 +291,16 @@ class _SettleUpPageState extends State<SettleUpPage> {
                       "******************\nsecond user share removed\ncurrent firstUserNewSecondShare: ${firstUserNewSecondShare.toString()}\n**************************");
                   secondUserShares.remove(secondUserShare);
 
-                  firstUserShares.remove(firstUserFirstShare);
                   firstUserShares.insert(j, firstUserNewFirstShare);
+                  firstUserShares.remove(firstUserFirstShare);
+
+                  firstUserShares.insert(firstUserShareWithTheSameLenderIndex,
+                      firstUserNewSecondShare);
+                  firstUserShares.remove(firstUserSecondShare);
+
                   j--; //to continue simplifying with other shares
                   break;
 
-                  firstUserShares.remove(firstUserSecondShare);
-                  firstUserShares.insert(firstUserShareWithTheSameLenderIndex,
-                      firstUserNewSecondShare);
                 }
                 //(1->2)*(x) and (2->3)(x+y) and (1->3)*z can be simplified to
                 //(2->3)*y and (1->3)*(z+x)
@@ -265,36 +316,39 @@ class _SettleUpPageState extends State<SettleUpPage> {
                     cost: firstUserSecondShare.cost + firstUserFirstShare.cost,
                   );
 
-                  secondUserShares.remove(secondUserShare);
                   secondUserShares.insert(k, secondUserNewShare);
+                  secondUserShares.remove(secondUserShare);
                   debugPrint(
-                      "******************\nfirst user first share removed\ncurrent secondUserShare: ${secondUserShare.toString()}\n**************************");
+                      "******************\n$firstUser first share removed\ncurrent secondUserShare: ${secondUserShare.toString()}\n**************************");
                   debugPrint(
-                      "******************\nfirst user first share removed\ncurrent firstUserNewSecondShare: ${firstUserNewSecondShare.toString()}\n**************************");
+                      "******************\n$firstUser first share removed\ncurrent firstUserNewSecondShare: ${firstUserNewSecondShare.toString()}\n**************************");
                   firstUserShares.remove(firstUserFirstShare);
 
-                  firstUserShares.remove(firstUserSecondShare);
                   firstUserShares.insert(firstUserShareWithTheSameLenderIndex,
                       firstUserNewSecondShare);
+                  firstUserShares.remove(firstUserSecondShare);
+
+                  j--; //because the Jth share has changed
                   break; //the target share has been fully simplified
                 }
               }
-              //204
               debugPrint(
-                  "******************\nline 204\n**************************");
+                  "******************\nmoving to ${secondUserShare.borrower} share, k: $k\n**************************");
             }
             simplifiedShares.update(
               firstUserFirstShare.lender,
               (value) => secondUserShares,
             );
           }
+          debugPrint(
+              "******************\nmoving to next user shares, j: $j\n**************************");
         }
-        //214
-        debugPrint("******************\nline 214\n**************************");
+        debugPrint(
+            "******************\nmoving to $firstUser next share\n**************************");
         simplifiedShares.update(firstUser, (value) => firstUserShares);
       }
-      //207
-      debugPrint("******************\nline 207\n**************************");
+      debugPrint(
+          "******************\n$firstUser shares fully simplified\n**************************");
     }
     debugPrint(
         "******************\nend of settling up\n**************************");
