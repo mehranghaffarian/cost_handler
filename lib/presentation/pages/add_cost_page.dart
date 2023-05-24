@@ -40,10 +40,7 @@ class _AddCostPageState extends State<AddCostPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MGAppbar(
-        title: "Add new cost",
-      ),
-      body: SingleChildScrollView(
+        body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Form(

@@ -2,6 +2,7 @@ import 'package:cost_handler/presentation/pages/add_cost_page.dart';
 import 'package:cost_handler/presentation/pages/add_user/add_user_page.dart';
 import 'package:cost_handler/presentation/pages/home_page.dart';
 import 'package:cost_handler/presentation/pages/settle_up_page.dart';
+import 'package:cost_handler/presentation/pages/test-page.dart';
 import 'package:flutter/material.dart';
 
 void main() async{
@@ -52,12 +53,13 @@ class MyApp extends StatelessWidget {
       //   ),
       // ),
       debugShowCheckedModeBanner: false,
-      initialRoute: HomePage.routeName,
+      initialRoute: TestPage.routeName,
       routes: {
         HomePage.routeName: (ctx) => HomePage(),
         AddUserPage.routeName: (ctx) => AddUserPage(),
         AddCostPage.routeName: (ctx) => const AddCostPage(),
         SettleUpPage.routeName: (ctx) => const SettleUpPage(),
+        TestPage.routeName: (ctx) => TestPage(),
        },
     );
   }

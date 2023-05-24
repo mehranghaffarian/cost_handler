@@ -40,40 +40,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Home Page"),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              final res =
-                  await Navigator.of(context).pushNamed(AddCostPage.routeName);
-              isLoading = true;
-              if (res == true) {
-                _getCosts();
-              }
-            },
-            icon: const Icon(Icons.add_shopping_cart_outlined,
-                color: Colors.black),
-          ),
-          IconButton(
-            onPressed: () =>
-                Navigator.of(context).pushNamed(AddUserPage.routeName),
-            icon: const Icon(
-              Icons.person_add_alt_1_sharp,
-              color: Colors.black,
-            ),
-          ),
-          IconButton(
-            onPressed: () =>
-                Navigator.of(context).pushNamed(SettleUpPage.routeName),
-            icon: const Icon(
-              Icons.account_balance_wallet_sharp,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      ),
-      body: Center(
+        body: Center(
         child: isLoading
             ? const CircularProgressIndicator()
             : costs.isEmpty

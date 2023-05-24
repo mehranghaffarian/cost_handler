@@ -33,7 +33,6 @@ class _SettleUpPageState extends State<SettleUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MGAppbar(title: "Settle Up"),
       body: isLoading
           ? const CircularProgressIndicator()
           : SingleChildScrollView(

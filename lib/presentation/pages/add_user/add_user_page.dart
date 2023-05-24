@@ -14,8 +14,7 @@ class AddUserPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MGAppbar(title: "Add User"),
-      body: Padding(
+        body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
