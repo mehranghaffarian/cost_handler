@@ -24,6 +24,7 @@ class TestPageState extends State<TestPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold( appBar: AppBar(
           title: Text(
             'Cost Handler',
@@ -35,11 +36,11 @@ class TestPageState extends State<TestPage> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: colorScheme.primary,
           boxShadow: [
             BoxShadow(
               blurRadius: 20,
-              color: Colors.black.withOpacity(.1),
+              color: colorScheme.secondary.withOpacity(0.5),
             )
           ],
         ),
@@ -47,15 +48,15 @@ class TestPageState extends State<TestPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
             child: GNav(
-              rippleColor: Colors.grey[300]!,
+              rippleColor: colorScheme.onSurface,
               hoverColor: Colors.grey[100]!,
               gap: 8,
-              activeColor: Colors.black,
+              activeColor: colorScheme.onBackground,
               iconSize: 24,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              duration: Duration(milliseconds: 1000),
-              tabBackgroundColor: Colors.grey[100]!,
-              color: Colors.black,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              duration: const Duration(milliseconds: 1000),
+              tabBackgroundColor: colorScheme.background,//Colors.grey[100]!,
+              color: colorScheme.background,
               tabs: const [
                 GButton(
                   icon: Icons.home,

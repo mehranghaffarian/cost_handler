@@ -39,34 +39,66 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-        body: Center(
+      body: Center(
         child: isLoading
             ? const CircularProgressIndicator()
             : costs.isEmpty
                 ? const Text("There is no cost yet!")
-                : ListView.builder(
-                    itemCount: costs.length,
-                    itemBuilder: (ctx, index) => _buildRow(costs[index]),
+                : Padding(
+                    padding: const EdgeInsets.all(5),
+                    // child: ListView.separated(
+                    //   separatorBuilder: (_, index) => const SizedBox(height: 5),
+                    //   itemCount: costs.length,
+                    //   itemBuilder: (ctx, index) => _buildRow(costs[index], [
+                    //     theme.colorScheme.primary,
+                    //     theme.colorScheme.surface,
+                    //     theme.colorScheme.secondary
+                    //   ]),
+                    // ),
+                    child: GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2),
+                        itemCount: costs.length,
+                        itemBuilder: (_, index) => _buildRow(costs[index], [
+                          theme.colorScheme.surface.withOpacity(0.5),
+                          theme.colorScheme.primary.withOpacity(1)
+                          ,
+                            ])),
                   ),
       ),
     );
   }
 
-  Widget _buildRow(CostEntity cost) {
+  Widget _buildRow(CostEntity cost, List<Color> colors) {
     return Card(
+      clipBehavior: Clip.antiAlias,
+      shadowColor: Colors.black,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+        side: BorderSide(color: Colors.blueGrey, width: 2),
+      ),
       elevation: 5,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text("spender: ${cost.spenderUserName}"),
-          const SizedBox(height: 10),
-          Text("description: ${cost.description}"),
-          const SizedBox(height: 10),
-          Text("cost: ${cost.cost}"),
-          const SizedBox(height: 10),
-          Text("users: ${cost.receiverUsersNames}"),
-        ],
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: colors),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text("spender: ${cost.spenderUserName}"),
+            const SizedBox(height: 10),
+            Text("description: ${cost.description}"),
+            const SizedBox(height: 10),
+            Text("cost: ${cost.cost}"),
+            const SizedBox(height: 10),
+            Text("users: ${cost.receiverUsersNames}"),
+          ],
+        ),
       ),
     );
   }
