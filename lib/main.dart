@@ -17,10 +17,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context){
-    final color = Colors.red;
     return MaterialApp(
       theme: ThemeData(
         colorScheme: const ColorScheme(
+          shadow: Color.fromRGBO(50, 252, 255, 0.5),
           brightness: Brightness.light,
           primary: Color.fromRGBO(10, 155, 10, 1.0),
           onPrimary: Color.fromRGBO(18, 78, 1, 1.0),
@@ -37,21 +37,21 @@ class MyApp extends StatelessWidget {
       //   primaryColorDark: const Color.fromRGBO(18, 78, 1, 1.0),
       //   errorColor: const Color.fromRGBO(150, 20, 20, 1.0),
       //   backgroundColor: const Color.fromRGBO(126, 212, 142, 1.0),
-      //   textTheme: const TextTheme(
-      //     titleMedium: TextStyle(
-      //       fontSize: 18,
-      //       color: Color.fromRGBO(0, 0, 0, 1.0),
-      //     ),
-      //     titleSmall: TextStyle(
-      //       fontSize: 15,
-      //       color: Color.fromRGBO(0, 0, 0, 1.0),
-      //     ),
-      //     titleLarge: TextStyle(
-      //       fontSize: 19,
-      //       fontWeight: FontWeight.bold,
-      //       color: Color.fromRGBO(0, 0, 0, 1.0),
-      //     ),
-      //   ),
+        textTheme: const TextTheme(
+          titleMedium: TextStyle(
+            fontSize: 20,
+            color: Color.fromRGBO(51, 8, 121, 1.0),
+          ),
+          titleSmall: TextStyle(
+            fontSize: 15,
+            color: Color.fromRGBO(0, 0, 0, 1.0),
+          ),
+          titleLarge: TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.bold,
+            color: Color.fromRGBO(0, 0, 0, 1.0),
+          ),
+        ),
       ),
       debugShowCheckedModeBanner: false,
       initialRoute: TestPage.routeName,

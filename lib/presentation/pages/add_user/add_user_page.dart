@@ -1,6 +1,7 @@
 import 'package:cost_handler/core/constants.dart';
 import 'package:cost_handler/core/users_database_helper.dart';
 import 'package:cost_handler/presentation/widgets/mg_appbar.dart';
+import 'package:cost_handler/presentation/widgets/neon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cost_handler/core/extensions/show_snack.dart';
 
@@ -32,17 +33,16 @@ class AddUserPage extends StatelessWidget {
               controller: addUserNameController,
             ),
             const SizedBox(height: 10),
-            ElevatedButton(
+            NeonButton(
               onPressed: () async{
                 final result = _addUser();
                 if (await result) {
                   context.showSnack("User added successfully");
-                  Navigator.of(context).pop();
                 } else {
                   context.showSnack("Adding user name failed");
                 }
               },
-              child: const Text("Add user"),
+              buttonText: "Add user",
             ),
             const SizedBox(height: 10),
           ],

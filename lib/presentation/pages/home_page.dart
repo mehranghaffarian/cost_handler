@@ -49,30 +49,25 @@ class _HomePageState extends State<HomePage> {
                 ? const Text("There is no cost yet!")
                 : Padding(
                     padding: const EdgeInsets.all(5),
-                    // child: ListView.separated(
-                    //   separatorBuilder: (_, index) => const SizedBox(height: 5),
-                    //   itemCount: costs.length,
-                    //   itemBuilder: (ctx, index) => _buildRow(costs[index], [
-                    //     theme.colorScheme.primary,
-                    //     theme.colorScheme.surface,
-                    //     theme.colorScheme.secondary
-                    //   ]),
-                    // ),
                     child: GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2),
-                        itemCount: costs.length,
-                        itemBuilder: (_, index) => _buildRow(costs[index], [
-                          theme.colorScheme.surface.withOpacity(0.5),
-                          theme.colorScheme.primary.withOpacity(1)
-                          ,
-                            ])),
+                      gridDelegate:
+                          SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2),
+                      itemCount: costs.length,
+                      itemBuilder: (_, index) => _buildRow(
+                        costs[index],
+                        context,
+                      ),
+                    ),
                   ),
       ),
     );
   }
 
-  Widget _buildRow(CostEntity cost, List<Color> colors) {
+  Widget _buildRow(CostEntity cost, BuildContext ctx) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       clipBehavior: Clip.antiAlias,
       shadowColor: Colors.black,
@@ -84,19 +79,49 @@ class _HomePageState extends State<HomePage> {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: colors),
+          gradient: LinearGradient(
+            begin: Alignment.bottomLeft,
+            colors: [
+              colorScheme.secondary.withOpacity(0.2),
+              colorScheme.primary.withOpacity(1),
+            ],
+          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("spender: ${cost.spenderUserName}"),
+            Row(
+              children: [
+                Icon(Icons.account_box_outlined, size: 30, color: colorScheme.onSurface, shadows: [Shadow(color: colorScheme.shadow, blurRadius: 5.0)],),
+                const SizedBox(width: 5),
+                Text(cost.spenderUserName, style: textTheme.titleMedium,),
+              ],
+            ),
             const SizedBox(height: 10),
-            Text("description: ${cost.description}"),
+            Row(
+              children: [
+                Icon(Icons.info_outline_rounded, size: 30, color: colorScheme.onSurface, shadows: [Shadow(color: colorScheme.shadow, blurRadius: 5.0),],),
+                const SizedBox(width: 5),
+                Text(cost.description ?? "Unknown", style: textTheme.titleMedium,),
+              ],
+            ),
             const SizedBox(height: 10),
-            Text("cost: ${cost.cost}"),
+            Row(
+              children: [
+                Icon(Icons.monetization_on_outlined, size: 30, color: colorScheme.onSurface, shadows: [Shadow(color: colorScheme.shadow, blurRadius: 5.0),],),
+                const SizedBox(width: 5),
+                Text(cost.cost.toStringAsFixed(2), style: textTheme.titleMedium,),
+              ],
+            ),
             const SizedBox(height: 10),
-            Text("users: ${cost.receiverUsersNames}"),
+            Row(
+              children: [
+                Icon(Icons.supervised_user_circle_sharp, size: 30, color: colorScheme.onSurface, shadows: [Shadow(color: colorScheme.shadow, blurRadius: 5.0),],),
+                const SizedBox(width: 5),
+                Text(cost.receiverUsersNames, style: textTheme.titleMedium,),
+              ],
+            ),
           ],
         ),
       ),

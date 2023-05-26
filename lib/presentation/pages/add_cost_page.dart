@@ -5,6 +5,7 @@ import 'package:cost_handler/domain/cost_entity.dart';
 import 'package:cost_handler/domain/user_entity.dart';
 import 'package:cost_handler/presentation/widgets/mg_appbar.dart';
 import 'package:cost_handler/presentation/widgets/mg_choosable_chip.dart';
+import 'package:cost_handler/presentation/widgets/neon_button.dart';
 import 'package:flutter/material.dart';
 
 class AddCostPage extends StatefulWidget {
@@ -39,17 +40,19 @@ class _AddCostPageState extends State<AddCostPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
         body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(10),
           child: Form(
             child: Column(
               children: [
                 isLoading
                     ? const CircularProgressIndicator()
                     : _createSpenderGridView(),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 TextField(
                   maxLines: 1,
                   decoration: InputDecoration(
@@ -64,7 +67,7 @@ class _AddCostPageState extends State<AddCostPage> {
                   keyboardType: TextInputType.number,
                   controller: costController,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 TextField(
                   maxLines: 1,
                   decoration: InputDecoration(
@@ -78,12 +81,12 @@ class _AddCostPageState extends State<AddCostPage> {
                   ),
                   controller: descriptionController,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 isLoading
                     ? const CircularProgressIndicator()
                     : _createUsersGridView(receivers),
-                const SizedBox(height: 10),
-                ElevatedButton(
+                const SizedBox(height: 15),
+                NeonButton(
                   onPressed: () async {
                     setState(() {
                       //todo: fix this shit
@@ -91,12 +94,11 @@ class _AddCostPageState extends State<AddCostPage> {
                     final result = _addCost();
                     if (await result) {
                       context.showSnack("Cost added successfully");
-                      Navigator.of(context).pop(true);
                     } else {
                       context.showSnack("Adding cost failed");
                     }
                   },
-                  child: const Text("Add cost"),
+                  buttonText: "Add cost",
                 ),
               ],
             ),
@@ -123,22 +125,24 @@ class _AddCostPageState extends State<AddCostPage> {
       height: 200,
       child: allUsers.isEmpty
           ? const Text("There is no user yet!")
-          : ListView.builder(
-              // gridDelegate:
-              //     const SliverGridDelegateWithMaxCrossAxisExtent(
-              //         maxCrossAxisExtent: 4),
+          : GridView.builder(
+              gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
               itemCount: allUsers.length,
               itemBuilder: (BuildContext context, int index) {
                 final user = allUsers[index];
-                return MGChoosableChip(
-                  label: user.userName,
-                  onTap: (newValue) {
-                    if (newValue) {
-                      receivers.add(user);
-                    } else {
-                      receivers.remove(user);
-                    }
-                  },
+                return Container(
+                  margin: const EdgeInsets.all(5),
+                  child: MGChoosableChip(
+                    label: user.userName,
+                    onTap: (newValue) {
+                      if (newValue) {
+                        receivers.add(user);
+                      } else {
+                        receivers.remove(user);
+                      }
+                    },
+                  ),
                 );
               },
             ),
@@ -150,20 +154,22 @@ class _AddCostPageState extends State<AddCostPage> {
       height: 200,
       child: allUsers.isEmpty
           ? const Text("There is no user yet!")
-          : ListView.builder(
-              // gridDelegate:
-              //     const SliverGridDelegateWithMaxCrossAxisExtent(
-              //         maxCrossAxisExtent: 4),
+          : GridView.builder(
+              gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
               itemCount: allUsers.length,
               itemBuilder: (BuildContext context, int index) {
                 final user = allUsers[index];
-                return MGChoosableChip(
-                  label: user.userName,
-                  onTap: (newValue) {
-                    if (newValue) {
-                      spender = user;
-                    }
-                  },
+                return Container(
+                  margin: const EdgeInsets.all(5),
+                  child: MGChoosableChip(
+                    label: user.userName,
+                    onTap: (newValue) {
+                      if (newValue) {
+                        spender = user;
+                      }
+                    },
+                  ),
                 );
               },
             ),
