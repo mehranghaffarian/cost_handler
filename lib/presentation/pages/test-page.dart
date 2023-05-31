@@ -25,14 +25,12 @@ class TestPageState extends State<TestPage> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Scaffold( appBar: AppBar(
-          title: Text(
-            'Cost Handler',
-            style: TextStyle(color: Colors.black),
-          ),),
-      backgroundColor: Colors.white,
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+    return Scaffold(
+      backgroundColor: Colors.grey[100],//todo: cool usage of colors
+      body: SafeArea(//todo what is safe area
+        child: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
