@@ -32,6 +32,8 @@ class _SettleUpPageState extends State<SettleUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       body: isLoading
           ? const CircularProgressIndicator()
@@ -39,17 +41,26 @@ class _SettleUpPageState extends State<SettleUpPage> {
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("All shares:"),
+                    Text(
+                      "All shares",
+                      style: textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 10),
                     SizedBox(
                       height: 200,
                       child: ListView(
-                        children: _buildSharesWidgets(targetShares: shares,),
+                        children: _buildSharesWidgets(
+                          targetShares: shares,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 30),
-                    const Text("Simplified Shares"),
+                    Text(
+                      "Simplified Shares",
+                      style: textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 10),
                     SizedBox(
                       height: 200,
@@ -86,7 +97,7 @@ class _SettleUpPageState extends State<SettleUpPage> {
             const SizedBox(height: 10),
             Text("Lender: ${e.lender}"),
             const SizedBox(height: 10),
-            Text("Cost: ${e.cost}"),
+            Text("Cost: ${e.cost.toStringAsFixed(3)}"),
           ];
           if (descriptionNeeded) {
             columnChildren.add(const SizedBox(height: 10));
@@ -104,10 +115,15 @@ class _SettleUpPageState extends State<SettleUpPage> {
       if (tempWidgets != null) {
         shareCards.addAll(tempWidgets);
       }
-      shareCards.add(Container(
-        height: 20,
-        color: Colors.cyan,
-      ));
+      shareCards.add(
+        Container(margin: const EdgeInsets.all(2.5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.cyan,
+          ),
+          height: 20,
+        ),
+      );
     }
     shareCards.add(const Text("End of shares"));
     return shareCards;
@@ -169,7 +185,13 @@ class _SettleUpPageState extends State<SettleUpPage> {
     for (var element in shares.keys) {
       final tempUser = shares[element];
       if (tempUser != null) {
-        final tempShares = tempUser.map((e) => ShareEntity(borrower: e.borrower, lender: e.lender, cost: e.cost,)).toList();
+        final tempShares = tempUser
+            .map((e) => ShareEntity(
+                  borrower: e.borrower,
+                  lender: e.lender,
+                  cost: e.cost,
+                ))
+            .toList();
         simplifiedShares.putIfAbsent(element, () => tempShares);
       }
     }
@@ -232,7 +254,8 @@ class _SettleUpPageState extends State<SettleUpPage> {
               debugPrint(
                   "******************\nnew secondUserShare: ${secondUserShare.toString()}\n**************************");
 
-              if (secondUserShare.lender == firstUserFirstShare.borrower && firstUserFirstShare.lender == secondUserShare.borrower) {
+              if (secondUserShare.lender == firstUserFirstShare.borrower &&
+                  firstUserFirstShare.lender == secondUserShare.borrower) {
                 if (secondUserShare.cost > firstUserFirstShare.cost) {
                   //1. 1->2*(x) and 2->1*(x+y) simplifies to 2->1*(y)
                   final secondUserNewShare = ShareEntity(
@@ -299,7 +322,6 @@ class _SettleUpPageState extends State<SettleUpPage> {
 
                   j--; //to continue simplifying with other shares
                   break;
-
                 }
                 //(1->2)*(x) and (2->3)(x+y) and (1->3)*z can be simplified to
                 //(2->3)*y and (1->3)*(z+x)

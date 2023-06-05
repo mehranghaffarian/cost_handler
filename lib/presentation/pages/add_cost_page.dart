@@ -43,7 +43,7 @@ class _AddCostPageState extends State<AddCostPage> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-        body: SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Form(
@@ -91,7 +91,19 @@ class _AddCostPageState extends State<AddCostPage> {
                     setState(() {
                       //todo: fix this shit
                     });
-                    final result = _addCost();
+                    final costValue = double.tryParse(costController.text) ?? 0;
+                    final spenderUserName = spender?.userName;
+
+                    if (spenderUserName == null) {
+                      context.showSnack("Invalid spender");
+                    }
+                    if (costValue == 0) {
+                      context.showSnack("Cost must be non zero");
+                    }
+
+                    final result = _addCost(
+                        costValue: costValue,
+                        spenderUserName: spenderUserName!);
                     if (await result) {
                       context.showSnack("Cost added successfully");
                     } else {
@@ -108,13 +120,15 @@ class _AddCostPageState extends State<AddCostPage> {
     );
   }
 
-  Future<bool> _addCost() async {
+  Future<bool> _addCost(
+      {required double costValue, required String spenderUserName}) async {
+    final description = descriptionController.text;
     final cost = CostEntity(
         receiverUsersNames:
             receivers.map((e) => e.userName).toList().join(", "),
-        spenderUserName: spender?.userName ?? "Unknown",
-        cost: double.tryParse(costController.text) ?? 0,
-        description: descriptionController.text);
+        spenderUserName: spenderUserName,
+        cost: costValue,
+        description: description.isEmpty ? "Unknown" : description);
 
     final res = await SessionDatabaseHelper.instance.insert(cost);
     return res != 0;
@@ -125,27 +139,25 @@ class _AddCostPageState extends State<AddCostPage> {
       height: 200,
       child: allUsers.isEmpty
           ? const Text("There is no user yet!")
-          : GridView.builder(
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-              itemCount: allUsers.length,
-              itemBuilder: (BuildContext context, int index) {
-                final user = allUsers[index];
-                return Container(
-                  margin: const EdgeInsets.all(5),
-                  child: MGChoosableChip(
-                    label: user.userName,
-                    onTap: (newValue) {
-                      if (newValue) {
-                        receivers.add(user);
-                      } else {
-                        receivers.remove(user);
-                      }
-                    },
-                  ),
-                );
-              },
-            ),
+          : Wrap(
+              children: allUsers
+                  .map(
+                    (user) => Container(
+                      margin: const EdgeInsets.all(5),
+                      child: MGChoosableChip(
+                        isChosen: receivers.contains(user),
+                        label: user.userName,
+                        onTap: (newValue) {
+                          if (newValue) {
+                            receivers.add(user);
+                          } else {
+                            receivers.remove(user);
+                          }
+                        },
+                      ),
+                    ),
+                  )
+                  .toList()),
     );
   }
 
@@ -154,24 +166,25 @@ class _AddCostPageState extends State<AddCostPage> {
       height: 200,
       child: allUsers.isEmpty
           ? const Text("There is no user yet!")
-          : GridView.builder(
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-              itemCount: allUsers.length,
-              itemBuilder: (BuildContext context, int index) {
-                final user = allUsers[index];
-                return Container(
-                  margin: const EdgeInsets.all(5),
-                  child: MGChoosableChip(
-                    label: user.userName,
-                    onTap: (newValue) {
-                      if (newValue) {
-                        spender = user;
-                      }
-                    },
-                  ),
-                );
-              },
+          : Wrap(
+              children: allUsers
+                  .map(
+                    (user) => Container(
+                      margin: const EdgeInsets.all(5),
+                      child: MGChoosableChip(
+                        isChosen: user == spender,
+                        label: user.userName,
+                        onTap: (newValue) {
+                          if (newValue) {
+                            setState(() {
+                              spender = user;
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
     );
   }

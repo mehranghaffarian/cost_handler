@@ -53,7 +53,7 @@ class AddUserPage extends StatelessWidget {
 
   Future<bool> _addUser() async {
     final givenUserName = addUserNameController.text;
-    if (givenUserName.length <= Constants.userNameMaxLen) {
+    if (givenUserName.length <= Constants.userNameMaxLen && givenUserName.isNotEmpty) {
       final res = await UsersDatabaseHelper.instance.insert(givenUserName);
       return res != 0;
     }

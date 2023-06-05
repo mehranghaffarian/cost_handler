@@ -38,9 +38,11 @@ class SessionDatabaseHelper {
 
   // Helper methods
   Future<int> insert(CostEntity cost) async {
-    final db = await instance.database;
-    final res = await db.insert(table, cost.toJson());
-    return res;
+    try{
+      final db = await instance.database;
+      final res = await db.insert(table, cost.toJson());
+      return res;
+    }catch(_){return 0;}
   }
 
   Future<List<CostEntity>> queryAllRows() async {

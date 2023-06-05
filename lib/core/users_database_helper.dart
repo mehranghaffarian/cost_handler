@@ -35,8 +35,12 @@ class UsersDatabaseHelper {
 
   // Helper methods
   Future<int> insert(String newUserName) async {
-    final db = await instance.database;
-    return await db.insert(table, {userNameColumn: newUserName});
+    try{
+      final db = await instance.database;
+      return await db.insert(table, {userNameColumn: newUserName});
+    }catch(_){
+      return 0;
+    }
   }
 
   Future<List<UserEntity>> queryAllRows() async {

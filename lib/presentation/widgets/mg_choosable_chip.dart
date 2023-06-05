@@ -5,7 +5,7 @@ class MGChoosableChip extends StatefulWidget {
   final Function(bool) onTap;
   bool isChosen = false;
 
-  MGChoosableChip({required this.label, required this.onTap, Key? key})
+  MGChoosableChip({required this.label, required this.onTap, this.isChosen = false, Key? key})
       : super(key: key);
 
   @override
@@ -17,22 +17,22 @@ class _MGChoosableChipState extends State<MGChoosableChip> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 40,
-      width: 50,
+      // width: 75,
       child: InkWell(
         onTap: () => setState(() {
           widget.isChosen = !widget.isChosen;
           widget.onTap(widget.isChosen);
         }),
         child: Container(
-          padding: const EdgeInsets.all(5),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: const Color.fromRGBO(180, 180, 180, 0.3),
           ),
           child: Row(
-            // mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(widget.label),
+              Flexible(child: Text(widget.label, maxLines: 1,)),
               const SizedBox(
                 width: 5,
               ),
