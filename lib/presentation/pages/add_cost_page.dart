@@ -43,77 +43,76 @@ class _AddCostPageState extends State<AddCostPage> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Form(
-            child: Column(
-              children: [
-                isLoading
-                    ? const CircularProgressIndicator()
-                    : _createSpenderGridView(),
-                const SizedBox(height: 15),
-                TextField(
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    hintText: "cost",
-                    hintStyle: const TextStyle(color: Colors.black38),
-                    labelText: "cost",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      gapPadding: 2,
-                    ),
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Form(
+          child: Column(
+            children: [
+              isLoading
+                  ? const CircularProgressIndicator()
+                  : _createSpenderGridView(),
+              const SizedBox(height: 15),
+              TextField(
+                maxLines: 1,
+                decoration: InputDecoration(
+                  hintText: "cost",
+                  hintStyle: const TextStyle(color: Colors.black38),
+                  labelText: "cost",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    gapPadding: 2,
                   ),
-                  keyboardType: TextInputType.number,
-                  controller: costController,
                 ),
-                const SizedBox(height: 15),
-                TextField(
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    hintText: "description",
-                    hintStyle: const TextStyle(color: Colors.black38),
-                    labelText: "description",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      gapPadding: 2,
-                    ),
+                keyboardType: TextInputType.number,
+                controller: costController,
+              ),
+              const SizedBox(height: 15),
+              TextField(
+                maxLines: 1,
+                decoration: InputDecoration(
+                  hintText: "description",
+                  hintStyle: const TextStyle(color: Colors.black38),
+                  labelText: "description",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    gapPadding: 2,
                   ),
-                  controller: descriptionController,
                 ),
-                const SizedBox(height: 15),
-                isLoading
-                    ? const CircularProgressIndicator()
-                    : _createUsersGridView(receivers),
-                const SizedBox(height: 15),
-                NeonButton(
-                  onPressed: () async {
-                    setState(() {
-                      //todo: fix this shit
-                    });
-                    final costValue = double.tryParse(costController.text) ?? 0;
-                    final spenderUserName = spender?.userName;
+                controller: descriptionController,
+              ),
+              const SizedBox(height: 15),
+              isLoading
+                  ? const CircularProgressIndicator()
+                  : _createUsersGridView(receivers),
+              const SizedBox(height: 15),
+              NeonButton(
+                onPressed: () async {
+                  setState(() {
+                    //todo: fix this shit
+                  });
+                  final costValue = double.tryParse(costController.text) ?? 0;
+                  final spenderUserName = spender?.userName;
 
-                    if (spenderUserName == null) {
-                      context.showSnack("Invalid spender");
-                    }
-                    if (costValue == 0) {
-                      context.showSnack("Cost must be non zero");
-                    }
+                  if (spenderUserName == null) {
+                    context.showSnack("Invalid spender");
+                    return;
+                  }
+                  if (costValue == 0) {
+                    context.showSnack("Cost must be non zero");
+                  return;}
 
-                    final result = _addCost(
-                        costValue: costValue,
-                        spenderUserName: spenderUserName!);
-                    if (await result) {
-                      context.showSnack("Cost added successfully");
-                    } else {
-                      context.showSnack("Adding cost failed");
-                    }
-                  },
-                  buttonText: "Add cost",
-                ),
-              ],
-            ),
+                  final result = _addCost(
+                      costValue: costValue,
+                      spenderUserName: spenderUserName);
+                  if (await result) {
+                    context.showSnack("Cost added successfully");
+                  } else {
+                    context.showSnack("Adding cost failed");
+                  }
+                },
+                buttonText: "Add cost",
+              ),
+            ],
           ),
         ),
       ),
@@ -139,53 +138,59 @@ class _AddCostPageState extends State<AddCostPage> {
       height: 200,
       child: allUsers.isEmpty
           ? const Text("There is no user yet!")
-          : Wrap(
-              children: allUsers
-                  .map(
-                    (user) => Container(
-                      margin: const EdgeInsets.all(5),
-                      child: MGChoosableChip(
-                        isChosen: receivers.contains(user),
-                        label: user.userName,
-                        onTap: (newValue) {
-                          if (newValue) {
-                            receivers.add(user);
-                          } else {
-                            receivers.remove(user);
-                          }
-                        },
+          : SingleChildScrollView(
+            child: Wrap(
+                children: allUsers
+                    .map(
+                      (user) => Container(
+                        margin: const EdgeInsets.all(5),
+                        child: MGChoosableChip(
+                          isChosen: receivers.contains(user),
+                          label: user.userName,
+                          onTap: (newValue) {
+                            if (newValue) {
+                              receivers.add(user);
+                            } else {
+                              receivers.remove(user);
+                            }
+                          },
+                        ),
                       ),
-                    ),
-                  )
-                  .toList()),
+                    )
+                    .toList()),
+          ),
     );
   }
 
   _createSpenderGridView() {
-    return SizedBox(
-      height: 200,
-      child: allUsers.isEmpty
-          ? const Text("There is no user yet!")
-          : Wrap(
-              children: allUsers
-                  .map(
-                    (user) => Container(
-                      margin: const EdgeInsets.all(5),
-                      child: MGChoosableChip(
-                        isChosen: user == spender,
-                        label: user.userName,
-                        onTap: (newValue) {
-                          if (newValue) {
-                            setState(() {
-                              spender = user;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                  )
-                  .toList(),
+    return SingleChildScrollView(
+      child: SizedBox(
+        height: 200,
+        child: allUsers.isEmpty
+            ? const Text("There is no user yet!")
+            : SingleChildScrollView(
+              child: Wrap(
+                  children: allUsers
+                      .map(
+                        (user) => Container(
+                          margin: const EdgeInsets.all(5),
+                          child: MGChoosableChip(
+                            isChosen: user == spender,
+                            label: user.userName,
+                            onTap: (newValue) {
+                              if (newValue) {
+                                setState(() {
+                                  spender = user;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
             ),
+      ),
     );
   }
 }

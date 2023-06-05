@@ -44,6 +44,21 @@ class _SettleUpPageState extends State<SettleUpPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
+                      "Simplified Shares",
+                      style: textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 200,
+                      child:
+                      ListView(
+                        children: _buildSharesWidgets(
+                            targetShares: simplifiedShares,
+                            descriptionNeeded: false),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    Text(
                       "All shares",
                       style: textTheme.titleLarge,
                     ),
@@ -54,20 +69,6 @@ class _SettleUpPageState extends State<SettleUpPage> {
                         children: _buildSharesWidgets(
                           targetShares: shares,
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    Text(
-                      "Simplified Shares",
-                      style: textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 200,
-                      child: ListView(
-                        children: _buildSharesWidgets(
-                            targetShares: simplifiedShares,
-                            descriptionNeeded: false),
                       ),
                     ),
                   ],
@@ -116,7 +117,8 @@ class _SettleUpPageState extends State<SettleUpPage> {
         shareCards.addAll(tempWidgets);
       }
       shareCards.add(
-        Container(margin: const EdgeInsets.all(2.5),
+        Container(
+          margin: const EdgeInsets.all(2.5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
             color: Colors.cyan,
