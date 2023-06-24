@@ -32,7 +32,9 @@ class _SettleUpPageState extends State<SettleUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceHeight = MediaQuery.of(context).size.height - 25;
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       body: isLoading
@@ -49,11 +51,13 @@ class _SettleUpPageState extends State<SettleUpPage> {
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
-                      height: 200,
+                      height: deviceHeight * 0.4,
                       child:
-                      ListView(
+                      GridView(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                         children: _buildSharesWidgets(
                             targetShares: simplifiedShares,
+                            iconColor: colorScheme.shadow,
                             descriptionNeeded: false),
                       ),
                     ),
@@ -64,9 +68,11 @@ class _SettleUpPageState extends State<SettleUpPage> {
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
-                      height: 200,
-                      child: ListView(
+                      height: deviceHeight * 0.4,
+                      child: GridView(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                         children: _buildSharesWidgets(
+                          iconColor: colorScheme.shadow,
                           targetShares: shares,
                         ),
                       ),
@@ -85,6 +91,7 @@ class _SettleUpPageState extends State<SettleUpPage> {
 
   List<Widget> _buildSharesWidgets({
     required Map<String, List<ShareEntity>> targetShares,
+    required Color iconColor,
     descriptionNeeded = true,
   }) {
     final List<Widget> shareCards = [];
@@ -93,22 +100,25 @@ class _SettleUpPageState extends State<SettleUpPage> {
     for (String user in users) {
       final tempWidgets = targetShares[user]?.map(
         (e) {
-          final columnChildren = [
-            Text("Borrower: ${e.borrower}"),
+          final List<Widget> columnChildren = [
+            Row(children: [Image.asset("assets/images/paying_money.png", width: 30, height: 30, color: iconColor,), Text(" ${e.borrower}")]),
             const SizedBox(height: 10),
-            Text("Lender: ${e.lender}"),
+            Row(children: [Image.asset("assets/images/getting_money.png", width: 30, height: 30, color: iconColor,), Text(" ${e.lender}")]),
             const SizedBox(height: 10),
-            Text("Cost: ${e.cost.toStringAsFixed(3)}"),
+            Row(children: [Image.asset("assets/images/price.png", width: 30, height: 30, color: iconColor,), Text(" ${e.cost.toStringAsFixed(3)}")]),
+
           ];
           if (descriptionNeeded) {
             columnChildren.add(const SizedBox(height: 10));
-            columnChildren.add(Text("Description: ${e.description}"));
+            columnChildren.add(Row(children: [Image.asset("assets/images/description.png", width: 30, height: 30, color: iconColor,), Text(" ${e.description}", overflow: TextOverflow.ellipsis,)]),);
           }
 
           return Card(
             elevation: 5,
-            child: Column(
-              children: columnChildren,
+            child: Padding(padding: const EdgeInsets.all(5),
+              child: Column(
+                children: columnChildren,
+              ),
             ),
           );
         },
@@ -116,16 +126,6 @@ class _SettleUpPageState extends State<SettleUpPage> {
       if (tempWidgets != null) {
         shareCards.addAll(tempWidgets);
       }
-      shareCards.add(
-        Container(
-          margin: const EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color: Colors.cyan,
-          ),
-          height: 20,
-        ),
-      );
     }
     shareCards.add(const Text("End of shares"));
     return shareCards;

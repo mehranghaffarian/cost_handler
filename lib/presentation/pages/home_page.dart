@@ -49,15 +49,22 @@ class _HomePageState extends State<HomePage> {
                 ? const Text("There is no cost yet!")
                 : Padding(
                     padding: const EdgeInsets.all(5),
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2),
-                      itemCount: costs.length,
-                      itemBuilder: (_, index) => _buildRow(
-                        costs[index],
-                        context,
+                    child: Scrollbar(
+                      thickness: 5.0,
+                      interactive: true,
+                      thumbVisibility: true,
+                      trackVisibility: true,
+                      radius: const Radius.circular(10),
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2),
+                        itemCount: costs.length,
+                        itemBuilder: (_, index) => _buildRow(
+                          costs[index],
+                          context,
+                        ),
                       ),
                     ),
                   ),
@@ -132,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                     cost.description?.length == 0
                         ? "temp"
                         : cost.description ?? "Unknown",
-                    style: textTheme.titleMedium,
+                    style: textTheme.titleMedium,overflow: TextOverflow.visible,
                     maxLines: 1,
                   ),
                 ),

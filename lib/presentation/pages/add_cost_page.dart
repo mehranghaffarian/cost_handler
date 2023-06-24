@@ -43,7 +43,7 @@ class _AddCostPageState extends State<AddCostPage> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      body: Padding(
+      body: SingleChildScrollView(child: Padding(
         padding: const EdgeInsets.all(10),
         child: Form(
           child: Column(
@@ -99,7 +99,7 @@ class _AddCostPageState extends State<AddCostPage> {
                   }
                   if (costValue == 0) {
                     context.showSnack("Cost must be non zero");
-                  return;}
+                    return;}
 
                   final result = _addCost(
                       costValue: costValue,
@@ -115,7 +115,7 @@ class _AddCostPageState extends State<AddCostPage> {
             ],
           ),
         ),
-      ),
+      ),),
     );
   }
 
