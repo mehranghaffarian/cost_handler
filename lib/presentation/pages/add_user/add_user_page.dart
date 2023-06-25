@@ -15,7 +15,7 @@ class AddUserPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Padding(
+      body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
@@ -34,10 +34,19 @@ class AddUserPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             NeonButton(
-              onPressed: () async{
-                final result = _addUser();
-                if (await result) {
+              onPressed: () async {
+                final givenUserName = addUserNameController.text;
+                if (givenUserName.length > Constants.userNameMaxLen) {
+                  context.showSnack("Username length should be less than ${Constants.userNameMaxLen}");
+                return;}
+                if(givenUserName.isEmpty){
+                  context.showSnack("Username should not be empty");
+                  return;
+                }
+                final result = await UsersDatabaseHelper.instance.insert(givenUserName);
+                if (result != 0) {
                   context.showSnack("User added successfully");
+                  addUserNameController.text = "";
                 } else {
                   context.showSnack("Adding user name failed");
                 }
@@ -49,14 +58,5 @@ class AddUserPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<bool> _addUser() async {
-    final givenUserName = addUserNameController.text;
-    if (givenUserName.length <= Constants.userNameMaxLen && givenUserName.isNotEmpty) {
-      final res = await UsersDatabaseHelper.instance.insert(givenUserName);
-      return res != 0;
-    }
-    return false;
   }
 }

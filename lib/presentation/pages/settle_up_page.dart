@@ -1,7 +1,7 @@
 import 'package:cost_handler/core/session_database_helper.dart';
 import 'package:cost_handler/domain/cost_entity.dart';
 import 'package:cost_handler/domain/share_entity.dart';
-import 'package:cost_handler/presentation/widgets/mg_appbar.dart';
+import 'package:cost_handler/presentation/widgets/mg_report_card.dart';
 import 'package:flutter/material.dart';
 
 class SettleUpPage extends StatefulWidget {
@@ -32,7 +32,7 @@ class _SettleUpPageState extends State<SettleUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    final deviceHeight = MediaQuery.of(context).size.height - 25;
+    final deviceHeightRemaining = MediaQuery.of(context).size.height - 25;
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -51,13 +51,14 @@ class _SettleUpPageState extends State<SettleUpPage> {
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
-                      height: deviceHeight * 0.4,
-                      child:
-                      GridView(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                      height: deviceHeightRemaining * 0.4,
+                      child: GridView(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2),
                         children: _buildSharesWidgets(
                             targetShares: simplifiedShares,
-                            iconColor: colorScheme.shadow,
+                            iconColor: colorScheme.onSurface,
                             descriptionNeeded: false),
                       ),
                     ),
@@ -68,11 +69,13 @@ class _SettleUpPageState extends State<SettleUpPage> {
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
-                      height: deviceHeight * 0.4,
+                      height: deviceHeightRemaining * 0.4,
                       child: GridView(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2),
                         children: _buildSharesWidgets(
-                          iconColor: colorScheme.shadow,
+                          iconColor: colorScheme.onSurface,
                           targetShares: shares,
                         ),
                       ),
@@ -101,26 +104,58 @@ class _SettleUpPageState extends State<SettleUpPage> {
       final tempWidgets = targetShares[user]?.map(
         (e) {
           final List<Widget> columnChildren = [
-            Row(children: [Image.asset("assets/images/paying_money.png", width: 30, height: 30, color: iconColor,), Text(" ${e.borrower}")]),
+            Row(children: [
+              Image.asset(
+                "assets/images/paying_money.png",
+                width: 30,
+                height: 30,
+                color: iconColor,
+              ),
+              Text(" ${e.borrower}")
+            ]),
             const SizedBox(height: 10),
-            Row(children: [Image.asset("assets/images/getting_money.png", width: 30, height: 30, color: iconColor,), Text(" ${e.lender}")]),
+            Row(children: [
+              Image.asset(
+                "assets/images/getting_money.png",
+                width: 30,
+                height: 30,
+                color: iconColor,
+              ),
+              Text(" ${e.lender}")
+            ]),
             const SizedBox(height: 10),
-            Row(children: [Image.asset("assets/images/price.png", width: 30, height: 30, color: iconColor,), Text(" ${e.cost.toStringAsFixed(3)}")]),
-
+            Row(children: [
+              Image.asset(
+                "assets/images/price.png",
+                width: 30,
+                height: 30,
+                color: iconColor,
+              ),
+              Text(" ${e.cost.toStringAsFixed(3)}")
+            ]),
           ];
           if (descriptionNeeded) {
             columnChildren.add(const SizedBox(height: 10));
-            columnChildren.add(Row(children: [Image.asset("assets/images/description.png", width: 30, height: 30, color: iconColor,), Text(" ${e.description}", overflow: TextOverflow.ellipsis,)]),);
+            columnChildren.add(
+              Row(children: [
+                Image.asset(
+                  "assets/images/description.png",
+                  width: 30,
+                  height: 30,
+                  color: iconColor,
+                ),
+                Flexible(
+                  child: Text(
+                    " ${e.description}",
+                    overflow: TextOverflow.visible,
+                    maxLines: 1,
+                  ),
+                )
+              ]),
+            );
           }
 
-          return Card(
-            elevation: 5,
-            child: Padding(padding: const EdgeInsets.all(5),
-              child: Column(
-                children: columnChildren,
-              ),
-            ),
-          );
+          return MGReportCard(reportInfoChildren: columnChildren);
         },
       ).toList();
       if (tempWidgets != null) {

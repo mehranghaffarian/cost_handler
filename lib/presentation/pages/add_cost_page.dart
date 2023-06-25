@@ -3,7 +3,6 @@ import 'package:cost_handler/core/session_database_helper.dart';
 import 'package:cost_handler/core/users_database_helper.dart';
 import 'package:cost_handler/domain/cost_entity.dart';
 import 'package:cost_handler/domain/user_entity.dart';
-import 'package:cost_handler/presentation/widgets/mg_appbar.dart';
 import 'package:cost_handler/presentation/widgets/mg_choosable_chip.dart';
 import 'package:cost_handler/presentation/widgets/neon_button.dart';
 import 'package:flutter/material.dart';
@@ -41,81 +40,85 @@ class _AddCostPageState extends State<AddCostPage> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final deviceHeightRemaining = MediaQuery.of(context).size.height - 30;
 
     return Scaffold(
-      body: SingleChildScrollView(child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Form(
-          child: Column(
-            children: [
-              isLoading
-                  ? const CircularProgressIndicator()
-                  : _createSpenderGridView(),
-              const SizedBox(height: 15),
-              TextField(
-                maxLines: 1,
-                decoration: InputDecoration(
-                  hintText: "cost",
-                  hintStyle: const TextStyle(color: Colors.black38),
-                  labelText: "cost",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    gapPadding: 2,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Form(
+            child: Column(
+              children: [
+                isLoading
+                    ? const CircularProgressIndicator()
+                    : _createSpenderGridView(deviceHeightRemaining * 0.3),
+                const SizedBox(height: 15),
+                TextField(
+                  maxLines: 1,
+                  decoration: InputDecoration(
+                    hintText: "cost",
+                    hintStyle: const TextStyle(color: Colors.black38),
+                    labelText: "cost",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      gapPadding: 2,
+                    ),
                   ),
+                  keyboardType: TextInputType.number,
+                  controller: costController,
                 ),
-                keyboardType: TextInputType.number,
-                controller: costController,
-              ),
-              const SizedBox(height: 15),
-              TextField(
-                maxLines: 1,
-                decoration: InputDecoration(
-                  hintText: "description",
-                  hintStyle: const TextStyle(color: Colors.black38),
-                  labelText: "description",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    gapPadding: 2,
+                const SizedBox(height: 15),
+                TextField(
+                  maxLines: 1,
+                  decoration: InputDecoration(
+                    hintText: "description",
+                    hintStyle: const TextStyle(color: Colors.black38),
+                    labelText: "description",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      gapPadding: 2,
+                    ),
                   ),
+                  controller: descriptionController,
                 ),
-                controller: descriptionController,
-              ),
-              const SizedBox(height: 15),
-              isLoading
-                  ? const CircularProgressIndicator()
-                  : _createUsersGridView(receivers),
-              const SizedBox(height: 15),
-              NeonButton(
-                onPressed: () async {
-                  setState(() {
-                    //todo: fix this shit
-                  });
-                  final costValue = double.tryParse(costController.text) ?? 0;
-                  final spenderUserName = spender?.userName;
+                const SizedBox(height: 15),
+                isLoading
+                    ? const CircularProgressIndicator()
+                    : _createUsersGridView(
+                        receivers, deviceHeightRemaining * 0.3),
+                const SizedBox(height: 15),
+                NeonButton(
+                  onPressed: () async {
+                    setState(() {
+                      //todo: fix this shit
+                    });
+                    final costValue = double.tryParse(costController.text) ?? 0;
+                    final spenderUserName = spender?.userName;
 
-                  if (spenderUserName == null) {
-                    context.showSnack("Invalid spender");
-                    return;
-                  }
-                  if (costValue == 0) {
-                    context.showSnack("Cost must be non zero");
-                    return;}
+                    if (spenderUserName == null) {
+                      context.showSnack("Invalid spender");
+                      return;
+                    }
+                    if (costValue == 0) {
+                      context.showSnack("Cost must be non zero");
+                      return;
+                    }
 
-                  final result = _addCost(
-                      costValue: costValue,
-                      spenderUserName: spenderUserName);
-                  if (await result) {
-                    context.showSnack("Cost added successfully");
-                  } else {
-                    context.showSnack("Adding cost failed");
-                  }
-                },
-                buttonText: "Add cost",
-              ),
-            ],
+                    final result = _addCost(
+                        costValue: costValue, spenderUserName: spenderUserName);
+                    if (await result) {
+                      context.showSnack("Cost added successfully");
+                    } else {
+                      context.showSnack("Adding cost failed");
+                    }
+                  },
+                  buttonText: "Add cost",
+                ),
+              ],
+            ),
           ),
         ),
-      ),),
+      ),
     );
   }
 
@@ -133,43 +136,43 @@ class _AddCostPageState extends State<AddCostPage> {
     return res != 0;
   }
 
-  _createUsersGridView(List<UserEntity> targetUsers) {
+  _createUsersGridView(List<UserEntity> targetUsers, double gridViewSize) {
     return SizedBox(
-      height: 200,
+      height: gridViewSize,
       child: allUsers.isEmpty
           ? const Text("There is no user yet!")
           : SingleChildScrollView(
-            child: Wrap(
-                children: allUsers
-                    .map(
-                      (user) => Container(
-                        margin: const EdgeInsets.all(5),
-                        child: MGChoosableChip(
-                          isChosen: receivers.contains(user),
-                          label: user.userName,
-                          onTap: (newValue) {
-                            if (newValue) {
-                              receivers.add(user);
-                            } else {
-                              receivers.remove(user);
-                            }
-                          },
+              child: Wrap(
+                  children: allUsers
+                      .map(
+                        (user) => Container(
+                          margin: const EdgeInsets.all(5),
+                          child: MGChoosableChip(
+                            isChosen: receivers.contains(user),
+                            label: user.userName,
+                            onTap: (newValue) {
+                              if (newValue) {
+                                receivers.add(user);
+                              } else {
+                                receivers.remove(user);
+                              }
+                            },
+                          ),
                         ),
-                      ),
-                    )
-                    .toList()),
-          ),
+                      )
+                      .toList()),
+            ),
     );
   }
 
-  _createSpenderGridView() {
+  _createSpenderGridView(double gridViewSize) {
     return SingleChildScrollView(
       child: SizedBox(
-        height: 200,
+        height: gridViewSize,
         child: allUsers.isEmpty
             ? const Text("There is no user yet!")
             : SingleChildScrollView(
-              child: Wrap(
+                child: Wrap(
                   children: allUsers
                       .map(
                         (user) => Container(
@@ -189,7 +192,7 @@ class _AddCostPageState extends State<AddCostPage> {
                       )
                       .toList(),
                 ),
-            ),
+              ),
       ),
     );
   }
