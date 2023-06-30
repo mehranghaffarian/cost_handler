@@ -33,14 +33,22 @@ class SessionDatabaseHelper {
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     await db.execute(
-        '''CREATE TABLE COSTS(spenderUserName VARCHAR(50), cost Double, description VARCHAR(200), receiverUsersNames VARCHAR(2000));''');
+        '''CREATE TABLE COSTS(costID VARCHAR(50), spenderUserName VARCHAR(50), cost Double, description VARCHAR(200), receiverUsersNames VARCHAR(2000), PRIMARY KEY (costID));''');
   }
 
-  // Helper methods
   Future<int> insert(CostEntity cost) async {
     try{
       final db = await instance.database;
       final res = await db.insert(table, cost.toJson());
+      debugPrint("\n\n\n\ninsert:\n${cost.toJson()}\n\n\n\n\n");
+      return res;
+    }catch(_){return 0;}
+  }
+
+  Future<int> delete(String costID) async {
+    try{
+      final db = await instance.database;
+      final res = await db.delete(table, where: "costId == $costID");
       return res;
     }catch(_){return 0;}
   }
@@ -48,6 +56,7 @@ class SessionDatabaseHelper {
   Future<List<CostEntity>> queryAllRows() async {
     final db = await instance.database;
     final res = (await db.query(table)).map((e) => CostEntity.fromJson(e)).toList();
+    debugPrint("\n\n\n\nquery all:\n$res\n\n\n\n\n");
     return res;
   }
 }

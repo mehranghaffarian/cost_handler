@@ -40,6 +40,7 @@ class _AddCostPageState extends State<AddCostPage> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final deviceHeightRemaining = MediaQuery.of(context).size.height - 30;
 
     return Scaffold(
@@ -49,6 +50,10 @@ class _AddCostPageState extends State<AddCostPage> {
           child: Form(
             child: Column(
               children: [
+                Text(
+                  "Spenders",
+                  style: textTheme.titleLarge,
+                ),const SizedBox(height: 10),
                 isLoading
                     ? const CircularProgressIndicator()
                     : _createSpenderGridView(deviceHeightRemaining * 0.3),
@@ -82,6 +87,10 @@ class _AddCostPageState extends State<AddCostPage> {
                   controller: descriptionController,
                 ),
                 const SizedBox(height: 15),
+                Text(
+                  "Receivers",
+                  style: textTheme.titleLarge,
+                ),const SizedBox(height: 10),
                 isLoading
                     ? const CircularProgressIndicator()
                     : _createUsersGridView(
@@ -126,6 +135,7 @@ class _AddCostPageState extends State<AddCostPage> {
       {required double costValue, required String spenderUserName}) async {
     final description = descriptionController.text;
     final cost = CostEntity(
+      costID: DateTime.now().millisecondsSinceEpoch.toString(),
         receiverUsersNames:
             receivers.map((e) => e.userName).toList().join(", "),
         spenderUserName: spenderUserName,

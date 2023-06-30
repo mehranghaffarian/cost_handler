@@ -33,8 +33,15 @@ class UsersDatabaseHelper {
     await db.execute('''CREATE TABLE USERS($userNameColumn VARCHAR(100), PRIMARY KEY($userNameColumn));''');
   }
 
-  // Helper methods
-  Future<int> insert(String newUserName) async {
+  Future<int> delete(String username) async {
+    try{
+      final db = await instance.database;
+      final res = await db.delete(table, where: "$userNameColumn == \"$username\"");
+      return res;
+    }catch(_){return 0;}
+  }
+
+    Future<int> insert(String newUserName) async {
     try{
       final db = await instance.database;
       return await db.insert(table, {userNameColumn: newUserName});

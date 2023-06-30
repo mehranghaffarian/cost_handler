@@ -44,16 +44,16 @@ class MyApp extends StatelessWidget {
         textTheme: const TextTheme(
           titleMedium: TextStyle(
             fontSize: 20,
-            color: Color.fromRGBO(51, 8, 121, 1.0),
+            color: Color.fromRGBO(0, 0, 0, 1.0),
           ),
           titleSmall: TextStyle(
             fontSize: 15,
-            color: Color.fromRGBO(51, 8, 121, 1.0),
+            color: Color.fromRGBO(0, 0, 0, 1.0),
           ),
           titleLarge: TextStyle(
             fontSize: 19,
             fontWeight: FontWeight.bold,
-            color: Color.fromRGBO(51, 8, 121, 1.0),
+            color: Color.fromRGBO(0, 0, 0, 1.0),
           ),
         ),
       ),

@@ -4,12 +4,13 @@ part 'cost_entity.g.dart';
 
 @JsonSerializable()
 class CostEntity {
+  final String costID;
   final String spenderUserName;
   final double cost;
   final String? description;
   final String receiverUsersNames;
 
-  CostEntity({required this.receiverUsersNames, required this.spenderUserName,
+  CostEntity({required this.costID, required this.receiverUsersNames, required this.spenderUserName,
     this.description,
     required this.cost,
   });
