@@ -1,7 +1,10 @@
+import 'package:cost_handler/core/extensions/show_snack.dart';
 import 'package:cost_handler/core/session_database_helper.dart';
+import 'package:cost_handler/core/users_database_helper.dart';
 import 'package:cost_handler/domain/cost_entity.dart';
 import 'package:cost_handler/domain/share_entity.dart';
 import 'package:cost_handler/presentation/widgets/mg_report_card.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SettleUpPage extends StatefulWidget {
@@ -52,7 +55,10 @@ class _SettleUpPageState extends State<SettleUpPage> {
                     const SizedBox(height: 10),
                     SizedBox(
                       height: deviceHeightRemaining * 0.4,
-                      child: GridView(
+                      child: simplifiedShares.isEmpty ? Text(
+                        "There is no share",
+                        style: textTheme.titleLarge,
+                      ) : GridView(
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2),
@@ -70,7 +76,10 @@ class _SettleUpPageState extends State<SettleUpPage> {
                     const SizedBox(height: 10),
                     SizedBox(
                       height: deviceHeightRemaining * 0.4,
-                      child: GridView(
+                      child: shares.isEmpty ? Text(
+                        "There is no share",
+                        style: textTheme.titleLarge,
+                      ) : GridView(
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2),
@@ -78,6 +87,56 @@ class _SettleUpPageState extends State<SettleUpPage> {
                           iconColor: colorScheme.onSurface,
                           targetShares: shares,
                         ),
+                      ),
+                    ), const SizedBox(height: 15),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showCupertinoDialog(context: context, builder: (context) => AlertDialog(
+                            title: const Text(
+                                "Do you really want to delete everything?"),
+                            actions: <Widget>[
+                              TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(),
+                                  child: const Text("No")),
+                              TextButton(
+                                onPressed: () async {
+                                  if (await UsersDatabaseHelper.instance
+                                      .deleteAll() >
+                                      0) {
+                                    context.showSnack(
+                                        "All users deleted successfully");
+                                    setState(() {});
+                                  } else {
+                                    context.showSnack(
+                                        "Deleting users failed");
+                                  }
+                                  if (await SessionDatabaseHelper.instance
+                                      .deleteAll() >
+                                      0) {
+                                    context.showSnack(
+                                        "All costs deleted successfully");
+                                    setState(() {});
+                                  } else {
+                                    context.showSnack(
+                                        "Deleting costs failed");
+                                  }
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  "Yes",
+                                  style: TextStyle(
+                                      color: colorScheme.error),
+                                ),
+                              ),
+                            ],));
+                        },
+                        style: ButtonStyle(
+                          backgroundColor:
+                          MaterialStateProperty.all(colorScheme.error),
+                        ),
+                        child: const Text("Delete all data!"),
                       ),
                     ),
                   ],

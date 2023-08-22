@@ -41,6 +41,14 @@ class UsersDatabaseHelper {
     }catch(_){return 0;}
   }
 
+  Future<int> deleteAll() async {
+    try{
+      final db = await instance.database;
+      final res = await db.delete(table);
+      return res;
+    }catch(_){return 0;}
+  }
+
     Future<int> insert(String newUserName) async {
     try{
       final db = await instance.database;

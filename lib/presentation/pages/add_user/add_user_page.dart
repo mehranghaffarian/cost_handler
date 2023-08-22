@@ -4,6 +4,7 @@ import 'package:cost_handler/domain/user_entity.dart';
 import 'package:cost_handler/presentation/widgets/mg_appbar.dart';
 import 'package:cost_handler/presentation/widgets/mg_choosable_chip.dart';
 import 'package:cost_handler/presentation/widgets/neon_button.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cost_handler/core/extensions/show_snack.dart';
 
@@ -82,14 +83,14 @@ class _AddUserPageState extends State<AddUserPage> {
                 buttonText: "Add user",
               ),
               const SizedBox(height: 20),
-              allUsers.isEmpty
+              isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : Wrap(
                       children: allUsers
                           .map(
                             (e) => InkWell(
                               onTap: () {
-                                showDialog(
+                                showCupertinoDialog(
                                   context: context,
                                   builder: (ctx) => AlertDialog(
                                     title: Text(

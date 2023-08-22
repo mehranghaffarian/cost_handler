@@ -112,6 +112,10 @@ class _AddCostPageState extends State<AddCostPage> {
                       context.showSnack("Cost must be non zero");
                       return;
                     }
+                    if (receivers.isEmpty) {
+                      context.showSnack("There must be at least one receiver");
+                      return;
+                    }
 
                     final result = _addCost(
                         costValue: costValue, spenderUserName: spenderUserName);

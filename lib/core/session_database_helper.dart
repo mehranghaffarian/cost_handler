@@ -53,6 +53,14 @@ class SessionDatabaseHelper {
     }catch(_){return 0;}
   }
 
+  Future<int> deleteAll() async {
+    try{
+      final db = await instance.database;
+      final res = await db.delete(table);
+      return res;
+    }catch(_){return 0;}
+  }
+
   Future<List<CostEntity>> queryAllRows() async {
     final db = await instance.database;
     final res = (await db.query(table)).map((e) => CostEntity.fromJson(e)).toList();
